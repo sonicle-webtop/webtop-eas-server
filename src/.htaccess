@@ -1,0 +1,12 @@
+AddDefaultCharset utf-8
+Options +FollowSymlinks
+Options -Indexes
+
+<IfModule mod_dir.c>
+  DirectoryIndex index.php
+</IfModule>
+
+php_flag magic_quotes_gpc off
+php_flag magic_quotes_runtime off
+php_flag register_globals off
+php_flag short_open_tag on

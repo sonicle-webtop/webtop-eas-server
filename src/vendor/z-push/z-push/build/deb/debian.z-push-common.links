@@ -1,0 +1,2 @@
+etc/z-push/z-push.conf.php usr/share/z-push/config.php
+etc/z-push/policies.ini usr/share/z-push/policies.ini

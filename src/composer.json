@@ -1,0 +1,38 @@
+{
+    "name": "sonicle/webtop-eas-server",
+    "description": "WebTop EAS Server (Exchange Active Sync)",
+	"keywords": ["WebTop", "EAS", "z-push"],
+	"homepage": "https://github.com/sonicle-webtop/webtop-dav-server",
+	"license": "AGPL-3.0-only",
+    "authors": [
+        {
+            "name": "Matteo Albinola",
+			"role" : "Developer"
+        }
+    ],
+    "require": {
+		"php": ">=5.5.0",
+		"lf4php/lf4php": "^4.2.2",
+		"hassankhan/config": "^1.0",
+		"guzzlehttp/guzzle": "^6.2",
+        "html2text/html2text": "^4.2"
+	},
+	"autoload": {
+		"psr-0": {
+			"lf4php": "lf4php/"
+		},
+		"psr-4": {
+			"WT\\": "lib/webtop/",
+			"WT\\Client\\Core\\": "lib/webtop-core-client/",
+			"WT\\Client\\Calendar\\": "lib/webtop-calendar-client/",
+			"WT\\Client\\Contacts\\": "lib/webtop-contacts-client/",
+			"WT\\Client\\Tasks\\": "lib/webtop-tasks-client/"
+		},
+		"classmap": [
+			"backend/webtop/"
+		],
+		"files": [
+			"vendor/z-push/z-push/src/vendor/autoload.php"
+		]
+	}
+}
