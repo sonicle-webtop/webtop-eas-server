@@ -72,7 +72,7 @@ Always enable SSL in production environments, Basic authentication is secure onl
 ## Configuration
 
 EAS server configuration is done via `config.json` file placed inside your installation root folder.
-You can start by copying the example [config.example.json](./src/config.example.json) configuration file, that carries all basic options needed for start-up.
+You can start by copying the example [config.example.json](./src/config.example.json) configuration file, that carries all basic options needed for start-up:
 
 ```shell
  $ cp config.example.json config.json
@@ -80,7 +80,7 @@ You can start by copying the example [config.example.json](./src/config.example.
 ```
 
 This setup relies on some internal defaults that you do not need to change and are suitable for most common situations.
-You can instead find a fully-featured example in [config.full.json](./src/config.full.json) file.
+You can instead find a fully-featured example in [config-full.example.json](./src/config-full.example.json) file.
 
 ### Options
 
