@@ -1,6 +1,7 @@
 {
 	"timezone": "Europe/Rome",
 	"log": {
+		"level": "ERROR",
 		"dir": "/var/log/webtop-eas"
 	},
 	"state": {

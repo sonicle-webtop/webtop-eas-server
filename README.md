@@ -100,7 +100,7 @@ At the bare minimum, you need to set values to the following options: *log.dir*,
   The log filename. *(Defaults to: `server.log`)*
 
 * `log.error.name` \[string]
-  The error log filename. *(Defaults to: `server.error.log`)*
+  The error log filename. *(Defaults to: `server_error.log`)*
 
 * &#9888; `state.dir` \[string]
   A path that points to the directory where the state files/directories will be written. (without trailling separator)
@@ -145,6 +145,7 @@ At the bare minimum, you need to set values to the following options: *log.dir*,
 {
 	"timezone": "Europe/Rome",
 	"log": {
+		"level": "ERROR",
 		"dir": "/var/log/webtop-eas"
 	},
 	"state": {

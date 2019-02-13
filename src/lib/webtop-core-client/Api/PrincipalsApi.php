@@ -93,14 +93,15 @@ class PrincipalsApi
      * Returns principal info
      *
      * @param  string $profileUsername Full profile username (user@domain.tld) (required)
+     * @param  string[] $permRefs Permissions to evaluate (optional)
      *
      * @throws \WT\Client\Core\ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return \WT\Client\Core\Model\PrincipalInfo
      */
-    public function getPrincipalInfo($profileUsername)
+    public function getPrincipalInfo($profileUsername, $permRefs = null)
     {
-        list($response) = $this->getPrincipalInfoWithHttpInfo($profileUsername);
+        list($response) = $this->getPrincipalInfoWithHttpInfo($profileUsername, $permRefs);
         return $response;
     }
 
@@ -110,15 +111,16 @@ class PrincipalsApi
      * Returns principal info
      *
      * @param  string $profileUsername Full profile username (user@domain.tld) (required)
+     * @param  string[] $permRefs Permissions to evaluate (optional)
      *
      * @throws \WT\Client\Core\ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return array of \WT\Client\Core\Model\PrincipalInfo, HTTP status code, HTTP response headers (array of strings)
      */
-    public function getPrincipalInfoWithHttpInfo($profileUsername)
+    public function getPrincipalInfoWithHttpInfo($profileUsername, $permRefs = null)
     {
         $returnType = '\WT\Client\Core\Model\PrincipalInfo';
-        $request = $this->getPrincipalInfoRequest($profileUsername);
+        $request = $this->getPrincipalInfoRequest($profileUsername, $permRefs);
 
         try {
             $options = $this->createHttpClientOption();
@@ -185,13 +187,14 @@ class PrincipalsApi
      * Returns principal info
      *
      * @param  string $profileUsername Full profile username (user@domain.tld) (required)
+     * @param  string[] $permRefs Permissions to evaluate (optional)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function getPrincipalInfoAsync($profileUsername)
+    public function getPrincipalInfoAsync($profileUsername, $permRefs = null)
     {
-        return $this->getPrincipalInfoAsyncWithHttpInfo($profileUsername)
+        return $this->getPrincipalInfoAsyncWithHttpInfo($profileUsername, $permRefs)
             ->then(
                 function ($response) {
                     return $response[0];
@@ -205,14 +208,15 @@ class PrincipalsApi
      * Returns principal info
      *
      * @param  string $profileUsername Full profile username (user@domain.tld) (required)
+     * @param  string[] $permRefs Permissions to evaluate (optional)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function getPrincipalInfoAsyncWithHttpInfo($profileUsername)
+    public function getPrincipalInfoAsyncWithHttpInfo($profileUsername, $permRefs = null)
     {
         $returnType = '\WT\Client\Core\Model\PrincipalInfo';
-        $request = $this->getPrincipalInfoRequest($profileUsername);
+        $request = $this->getPrincipalInfoRequest($profileUsername, $permRefs);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -255,11 +259,12 @@ class PrincipalsApi
      * Create request for operation 'getPrincipalInfo'
      *
      * @param  string $profileUsername Full profile username (user@domain.tld) (required)
+     * @param  string[] $permRefs Permissions to evaluate (optional)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
      */
-    protected function getPrincipalInfoRequest($profileUsername)
+    protected function getPrincipalInfoRequest($profileUsername, $permRefs = null)
     {
         // verify the required parameter 'profileUsername' is set
         if ($profileUsername === null || (is_array($profileUsername) && count($profileUsername) === 0)) {
@@ -275,6 +280,13 @@ class PrincipalsApi
         $httpBody = '';
         $multipart = false;
 
+        // query params
+        // PULL REQUEST -->
+        if (is_array($permRefs)) {
+            //$permRefs = ObjectSerializer::serializeCollection($permRefs, 'csv', true);
+			$queryParams['permRefs'] = $permRefs;
+        }
+        // <-- PULL REQUEST
 
         // path params
         if ($profileUsername !== null) {

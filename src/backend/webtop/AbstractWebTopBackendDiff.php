@@ -3,6 +3,7 @@
 use WT\EAS\Config;
 
 abstract class AbstractWebTopBackendDiff extends BackendDiff {
+	const PERMREF_DEVICES_SYNC = 'com.sonicle.webtop.core/DEVICES_SYNC/ACCESS';
 	//protected $currentDomain;
 	protected $currentUsername;
 	protected $currentPassword;
@@ -49,19 +50,27 @@ abstract class AbstractWebTopBackendDiff extends BackendDiff {
 		
 		try {
 			$api = new \WT\Client\Core\Api\PrincipalsApi(null, $this->getWTApiConfig($username, $password));
-			$item = $api->getPrincipalInfo($username);
+			$item = $api->getPrincipalInfo($username, [self::PERMREF_DEVICES_SYNC]);
 			//$this->currentDomain = $domain;
 			$this->currentUsername = $username;
 			$this->currentPassword = $password;
 			$this->currentUserInfo = $item;
 			
-			return true;
+			if ($item->getEvalPermRefs()[0] === true) {
+				return true;
+			} else {
+				$logger->trace('Required permission not satisfied [{}, {}]', [$username, self::PERMREF_DEVICES_SYNC]);
+				return false;
+			}
 			
 		} catch (\WT\Client\Core\ApiException $ex) {
-			if (($ex->getCode() === 401) || $ex->getCode() === 404) {
-				// Return false only if the user is not found or credentials are incorrect.
-				// This avoids password request screen on the phone.
+			// NB: return false ONLY when the user is not found or credentials are incorrect!
+			// This behaviour should avoid the prompt for new/updated credentials
+			// on the phone. So, the default action is throwing an exception.
+			if (($ex->getCode() === 401) || ($ex->getCode() === 404)) {
 				return false;
+			} else if ($ex->getCode() === 503) {
+				throw new ZPushException("Service unavailable at the moment: backend is maybe in maintenance!");
 			} else {
 				$logger->error($ex);
 				throw new FatalException(sprintf("AbstractWebTopBackendDiff(): %s", $ex->getMessage()), 0, null, LOGLEVEL_FATAL);

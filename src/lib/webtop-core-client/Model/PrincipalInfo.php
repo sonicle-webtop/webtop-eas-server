@@ -62,7 +62,8 @@ class PrincipalInfo implements ModelInterface, ArrayAccess
         'displayName' => 'string',
         'emailAddress' => 'string',
         'timezoneId' => 'string',
-        'languageTag' => 'string'
+        'languageTag' => 'string',
+        'evalPermRefs' => 'bool[]'
     ];
 
     /**
@@ -76,7 +77,8 @@ class PrincipalInfo implements ModelInterface, ArrayAccess
         'displayName' => null,
         'emailAddress' => null,
         'timezoneId' => null,
-        'languageTag' => null
+        'languageTag' => null,
+        'evalPermRefs' => null
     ];
 
     /**
@@ -111,7 +113,8 @@ class PrincipalInfo implements ModelInterface, ArrayAccess
         'displayName' => 'displayName',
         'emailAddress' => 'emailAddress',
         'timezoneId' => 'timezoneId',
-        'languageTag' => 'languageTag'
+        'languageTag' => 'languageTag',
+        'evalPermRefs' => 'evalPermRefs'
     ];
 
     /**
@@ -125,7 +128,8 @@ class PrincipalInfo implements ModelInterface, ArrayAccess
         'displayName' => 'setDisplayName',
         'emailAddress' => 'setEmailAddress',
         'timezoneId' => 'setTimezoneId',
-        'languageTag' => 'setLanguageTag'
+        'languageTag' => 'setLanguageTag',
+        'evalPermRefs' => 'setEvalPermRefs'
     ];
 
     /**
@@ -139,7 +143,8 @@ class PrincipalInfo implements ModelInterface, ArrayAccess
         'displayName' => 'getDisplayName',
         'emailAddress' => 'getEmailAddress',
         'timezoneId' => 'getTimezoneId',
-        'languageTag' => 'getLanguageTag'
+        'languageTag' => 'getLanguageTag',
+        'evalPermRefs' => 'getEvalPermRefs'
     ];
 
     /**
@@ -208,6 +213,7 @@ class PrincipalInfo implements ModelInterface, ArrayAccess
         $this->container['emailAddress'] = isset($data['emailAddress']) ? $data['emailAddress'] : null;
         $this->container['timezoneId'] = isset($data['timezoneId']) ? $data['timezoneId'] : null;
         $this->container['languageTag'] = isset($data['languageTag']) ? $data['languageTag'] : null;
+        $this->container['evalPermRefs'] = isset($data['evalPermRefs']) ? $data['evalPermRefs'] : null;
     }
 
     /**
@@ -405,6 +411,30 @@ class PrincipalInfo implements ModelInterface, ArrayAccess
     public function setLanguageTag($languageTag)
     {
         $this->container['languageTag'] = $languageTag;
+
+        return $this;
+    }
+
+    /**
+     * Gets evalPermRefs
+     *
+     * @return bool[]
+     */
+    public function getEvalPermRefs()
+    {
+        return $this->container['evalPermRefs'];
+    }
+
+    /**
+     * Sets evalPermRefs
+     *
+     * @param bool[] $evalPermRefs evalPermRefs
+     *
+     * @return $this
+     */
+    public function setEvalPermRefs($evalPermRefs)
+    {
+        $this->container['evalPermRefs'] = $evalPermRefs;
 
         return $this;
     }
