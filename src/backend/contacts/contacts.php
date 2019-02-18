@@ -57,13 +57,13 @@ class BackendContacts extends AbstractWebTopBackendDiff {
 	];
 
 	protected function getContactsApiConfig() {
-		$easConfig = Config::get();
-		$config = new \WT\Client\Contacts\Configuration();
-		$config->setUserAgent(constant('WEBTOP-EAS-SERVER_NAME').'/'.constant('WEBTOP-EAS-SERVER_VERSION').'/php');
-		$config->setUsername($this->currentUsername);
-		$config->setPassword($this->currentPassword);
-		$config->setHost($easConfig->getWTApiBaseURL().$easConfig->getContactsApiUrlPath());
-		return $config;
+		$config = Config::get();
+		$obj = new \WT\Client\Contacts\Configuration();
+		$obj->setUserAgent(constant('WEBTOP-EAS-SERVER_NAME').'/'.constant('WEBTOP-EAS-SERVER_VERSION').'/php');
+		$obj->setUsername($this->currentUsername);
+		$obj->setPassword($this->currentPassword);
+		$obj->setHost($config->getWTApiBaseURL().$config->getContactsApiUrlPath());
+		return $obj;
 	}
 	
 	protected function getLogger() {

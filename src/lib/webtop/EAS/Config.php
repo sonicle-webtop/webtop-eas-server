@@ -40,8 +40,9 @@ class Config extends AbstractConfig {
 		parent::__construct($file);
 		
 		$timezone = $this->getTimezone();
+		if (empty($timezone)) throw new Exception("Missing 'timezone' configuration.");
 		if (!date_default_timezone_set($timezone)) {
-			throw new Exception(sprintf("The configured timezone '%s' is not valid. Please check supported timezones at http://www.php.net/manual/en/timezones.php", $timezone));
+			throw new Exception(sprintf("The specified timezone '%s' is not valid. Please check supported timezones at http://www.php.net/manual/en/timezones.php", $timezone));
 		}
 	}
 	
@@ -98,7 +99,7 @@ class Config extends AbstractConfig {
 	}
 	
 	public function getCalendarApiUrlPath() {
-		return '/'.\WT\Util::stripLeadingDirSeparator($this->getValue('calendar.apiUrlPath', $this->defaults), '/');
+		return '/'.\WT\Util::stripDirSeparator($this->getValue('calendar.apiUrlPath', $this->defaults), '/');
 	}
 	
 	public function getContactsEnabled() {
@@ -106,7 +107,7 @@ class Config extends AbstractConfig {
 	}
 	
 	public function getContactsApiUrlPath() {
-		return '/'.\WT\Util::stripLeadingDirSeparator($this->getValue('contacts.apiUrlPath', $this->defaults), '/');
+		return '/'.\WT\Util::stripDirSeparator($this->getValue('contacts.apiUrlPath', $this->defaults), '/');
 	}
 	
 	public function getTasksEnabled() {
@@ -114,6 +115,6 @@ class Config extends AbstractConfig {
 	}
 	
 	public function getTasksApiUrlPath() {
-		return '/'.\WT\Util::stripLeadingDirSeparator($this->getValue('tasks.apiUrlPath', $this->defaults), '/');
+		return '/'.\WT\Util::stripDirSeparator($this->getValue('tasks.apiUrlPath', $this->defaults), '/');
 	}
 }

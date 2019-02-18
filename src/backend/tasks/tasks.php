@@ -7,13 +7,13 @@ use WT\EAS\ZPUtil;
 class BackendTasks extends AbstractWebTopBackendDiff {
 
 	protected function getTasksApiConfig() {
-		$easConfig = Config::get();
-		$config = new \WT\Client\Tasks\Configuration();
-		$config->setUserAgent(constant('WEBTOP-EAS-SERVER_NAME').'/'.constant('WEBTOP-EAS-SERVER_VERSION').'/php');
-		$config->setUsername($this->currentUsername);
-		$config->setPassword($this->currentPassword);
-		$config->setHost($easConfig->getWTApiBaseURL().$easConfig->getTasksApiUrlPath());
-		return $config;
+		$config = Config::get();
+		$obj = new \WT\Client\Tasks\Configuration();
+		$obj->setUserAgent(constant('WEBTOP-EAS-SERVER_NAME').'/'.constant('WEBTOP-EAS-SERVER_VERSION').'/php');
+		$obj->setUsername($this->currentUsername);
+		$obj->setPassword($this->currentPassword);
+		$obj->setHost($config->getWTApiBaseURL().$config->getTasksApiUrlPath());
+		return $obj;
 	}
 	
 	protected function getUserTZName() {

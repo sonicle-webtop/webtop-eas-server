@@ -20,7 +20,6 @@ class Util {
 			return $path;
 		}
 		return is_null($path) ? $path : ltrim($path, $separator);
-		//return ltrim($path, $separator);
 	}
 	
 	public static function stripTrailingDirSeparator($path, $separator = DIRECTORY_SEPARATOR) {
@@ -28,7 +27,13 @@ class Util {
 			return $path;
 		}
 		return is_null($path) ? $path : rtrim($path, $separator);
-		//return rtrim($path, $separator);
+	}
+	
+	public static function stripDirSeparator($path, $separator = DIRECTORY_SEPARATOR) {
+		if ($path === $separator) {
+			return $path;
+		}
+		return is_null($path) ? $path : trim($path, $separator);
 	}
 	
 	/*

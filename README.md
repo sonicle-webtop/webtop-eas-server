@@ -10,7 +10,7 @@ You can find an indicative compatibility table [here](https://wiki.z-hub.io/disp
 This backend is built on top of [Z-Push](http://z-push.org/), so you need to so you need to satisfy at least z-push [requirements](https://wiki.z-hub.io/display/ZP/Installation+from+source).
 Then, summing:
 
-* PHP >= 5.5.X (with php-imap extension installed)
+* PHP >= 5.5.X (with php-imap and php-mbstring extensions installed)
 * Apache with mod_php
 * WebTop instance supporting EAS REST API (core >= v.5.6.0, calendar >= v.5.6.0, contacts >= v.5.6.0, tasks >= v.5.3.0)
 

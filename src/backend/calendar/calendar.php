@@ -7,13 +7,13 @@ use WT\EAS\ZPUtil;
 class BackendCalendar extends AbstractWebTopBackendDiff {
 
 	protected function getCalendarApiConfig() {
-		$easConfig = Config::get();
-		$config = new \WT\Client\Calendar\Configuration();
-		$config->setUserAgent(constant('WEBTOP-EAS-SERVER_NAME').'/'.constant('WEBTOP-EAS-SERVER_VERSION').'/php');
-		$config->setUsername($this->currentUsername);
-		$config->setPassword($this->currentPassword);
-		$config->setHost($easConfig->getWTApiBaseURL().$easConfig->getCalendarApiUrlPath());
-		return $config;
+		$config = Config::get();
+		$obj = new \WT\Client\Calendar\Configuration();
+		$obj->setUserAgent(constant('WEBTOP-EAS-SERVER_NAME').'/'.constant('WEBTOP-EAS-SERVER_VERSION').'/php');
+		$obj->setUsername($this->currentUsername);
+		$obj->setPassword($this->currentPassword);
+		$obj->setHost($config->getWTApiBaseURL().$config->getCalendarApiUrlPath());
+		return $obj;
 	}
 	
 	protected function getUserTZName() {
