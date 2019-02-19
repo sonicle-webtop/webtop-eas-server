@@ -33,8 +33,7 @@
 			"backend/webtop/"
 		],
 		"files": [
-			"vendor/z-push/z-push/src/vendor/autoload.php",
-			"vendor/awl/XMLElement.php"
+			"vendor/z-push/z-push/src/vendor/autoload.php"
 		]
 	}
 }

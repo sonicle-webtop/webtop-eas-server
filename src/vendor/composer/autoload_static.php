@@ -12,7 +12,6 @@ class ComposerStaticInitb5c69df844eba00a99a848b618335af6
         'a0edc8309cc5e1d60e3047b5df6b7052' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/functions_include.php',
         '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
         '84c4ea78c0b9fa5bfcd59f33faa33d3b' => __DIR__ . '/..' . '/z-push/z-push/src/vendor/autoload.php',
-        '56580ca4308f1b9d712fc78f76377489' => __DIR__ . '/..' . '/awl/XMLElement.php',
     );
 
     public static $prefixLengthsPsr4 = array (

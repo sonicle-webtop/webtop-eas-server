@@ -1,6 +1,5 @@
 <?php
 
-//use WT\Util;
 use WT\EAS\Config;
 
 class BackendWebTop extends BackendCombined {
@@ -15,7 +14,11 @@ class BackendWebTop extends BackendCombined {
 		// This substantially avoids backward states compatibility issues.
 		
 		if (Config::get()->getMailEnabled()) {
-			//Util::requireFromDir(WT_EAS_ROOT, 'backend/imap/config.php');
+			// Add the path for Andrew's Web Libraries to include_path
+			// because it is required for the emails with ics attachments
+			// @see https://jira.z-hub.io/browse/ZP-1149
+			set_include_path(get_include_path().PATH_SEPARATOR . WT_EAS_ROOT.'/php-awl');
+			
 			require_once WT_EAS_ROOT.'/backend/imap/config.php';
 			
 			$backends['i'] = [
