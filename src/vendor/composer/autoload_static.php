@@ -11,6 +11,7 @@ class ComposerStaticInitb5c69df844eba00a99a848b618335af6
         'c964ee0ededf28c96ebd9db5099ef910' => __DIR__ . '/..' . '/guzzlehttp/promises/src/functions_include.php',
         'a0edc8309cc5e1d60e3047b5df6b7052' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/functions_include.php',
         '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
+        '21cf0be54ee71e98be5f714fcd408ccf' => __DIR__ . '/../..' . '/package-info.php',
         '84c4ea78c0b9fa5bfcd59f33faa33d3b' => __DIR__ . '/..' . '/z-push/z-push/src/vendor/autoload.php',
     );
 

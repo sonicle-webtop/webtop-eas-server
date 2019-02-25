@@ -1,4 +1,4 @@
 <?php
 
 define('WEBTOP-EAS-SERVER_NAME', 'webtop-eas-server');
-define('WEBTOP-EAS-SERVER_VERSION', '2.4.5.3');
+define('WEBTOP-EAS-SERVER_VERSION', \WT\Util::readVersion());

@@ -33,6 +33,7 @@
 			"backend/webtop/"
 		],
 		"files": [
+			"package-info.php",
 			"vendor/z-push/z-push/src/vendor/autoload.php"
 		]
 	}

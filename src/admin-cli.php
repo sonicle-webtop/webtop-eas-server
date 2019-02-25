@@ -6,7 +6,6 @@ error_reporting(E_ALL & ~E_NOTICE & ~E_USER_NOTICE);
 // We need to set also this customized const...
 define('LOG_ERROR_MASK', ~(E_NOTICE|E_USER_NOTICE|E_STRICT));
 
-require_once 'version.php';
 require_once 'vendor/autoload.php';
 
 define('WT_EAS_ROOT', __DIR__);
