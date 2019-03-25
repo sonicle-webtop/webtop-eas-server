@@ -230,7 +230,7 @@ class BackendContacts extends AbstractWebTopBackendDiff {
 		$obj->parentid = '0';
 		//$obj->parentid = $item->getOwnerUsername();
 		$obj->displayname = $item->getDisplayName();
-		$obj->type = SYNC_FOLDER_TYPE_CONTACT;
+		$obj->type = SYNC_FOLDER_TYPE_USER_CONTACT;
 		return $obj;
 	}
 	

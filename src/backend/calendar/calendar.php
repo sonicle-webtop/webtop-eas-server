@@ -193,7 +193,7 @@ class BackendCalendar extends AbstractWebTopBackendDiff {
 		$obj->parentid = '0';
 		//$obj->parentid = $item->getOwnerUsername();
 		$obj->displayname = $item->getDisplayName();
-		$obj->type = SYNC_FOLDER_TYPE_APPOINTMENT;
+		$obj->type = SYNC_FOLDER_TYPE_USER_APPOINTMENT;
 		return $obj;
 	}
 	
