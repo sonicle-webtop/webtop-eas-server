@@ -215,11 +215,17 @@ class BackendCalendar extends AbstractWebTopBackendDiff {
 		$obj->starttime = ZPUtil::parseISODateTime($item->getStart());
 		$obj->subject = $item->getTitle();
 		$obj->uid = $item->getId();
+		/*
+		 * Do not set organizer because Android's allow allow modification 
+		 * only if your account email is equal to the one written into the 
+		 * event's organizer field.
+		 * 
 		$iaOrg = ZPUtil::parseInternetAddress($item->getOrganizer());
 		if ($iaOrg !== false) {
 			$obj->organizername = $iaOrg['personal'];
 			$obj->organizeremail = $iaOrg['address'];
 		}
+		*/
 		$obj->location = $item->getLocation();
 		$obj->endtime = ZPUtil::parseISODateTime($item->getEnd());
 		if (!empty($item->getRecRule())) {
