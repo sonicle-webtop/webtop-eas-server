@@ -228,7 +228,7 @@ class BackendCalendar extends AbstractWebTopBackendDiff {
 			if (!empty($dates)) {
 				$obj->exceptions = [];
 				for ($i = 0; $i < count($dates); $i++) {
-					$obj->exceptions[] = $this->toZPSyncAppointmentException($dates[$i]);
+					$obj->exceptions[] = $this->toZPSyncAppointmentException($dates[$i], ($item->getAllDay() === true) ? null : $item->getStart());
 				}
 			}
 		}
@@ -279,11 +279,15 @@ class BackendCalendar extends AbstractWebTopBackendDiff {
 		return $obj;
 	}
 	
-	protected function toZPSyncAppointmentException($exDate) {
+	protected function toZPSyncAppointmentException($exDate, $start = null) {
 		$obj = new SyncAppointmentException();
 		
 		$obj->deleted = 1;
-		$obj->exceptionstarttime = ZPUtil::parseISODate($exDate);
+		if (is_null($start)) {
+			$obj->exceptionstarttime = ZPUtil::parseISODate($exDate);
+		} else {
+			$obj->exceptionstarttime = ZPUtil::parseISODateTime($exDate . substr($start, -8));
+		}
 		
 		return $obj;
 	}
