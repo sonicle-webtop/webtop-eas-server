@@ -158,7 +158,7 @@ abstract class AbstractWebTopBackendDiff extends BackendDiff {
 	
 	public function ChangesSink($timeout = 30) {
 		$logger = $this->getLogger();
-		$logger->debug('{}({})', [__METHOD__, $timeout]);
+		if ($logger->isDebugEnabled()) $logger->debug('{}({})', [__METHOD__, $timeout]);
 		
 		$notifications = [];
 		$stopat = time() + $timeout -1;
@@ -167,12 +167,13 @@ abstract class AbstractWebTopBackendDiff extends BackendDiff {
 			if (!is_null($folders)) {
 				foreach ($this->sinkFolders as $folderId) {
 					$newState = array_key_exists($folderId, $folders) ? $folders[$folderId]->getEtag() : null;
-					$logger->trace('Checking changes... [{}, {}]', [$folderId, $newState]);
 					if (!isset($this->sinkStates[$folderId])) {
+						if ($logger->isTraceEnabled()) $logger->trace('Initializing changes sink... [{}, {}]', [$folderId, $newState]);
 						$this->sinkStates[$folderId] = $newState;
 					}
-					if ($this->sinkStates[$folderId] != $newState) {
-						$logger->trace('Changes for folder [{}]: {} -> {}', [$folderId, $this->sinkStates[$folderId], $newState]);
+					if ($logger->isTraceEnabled()) $logger->trace('Checking changes... [{}, {} =? {}]', [$folderId, $this->sinkStates[$folderId], $newState]);
+					if ($this->sinkStates[$folderId] !== $newState) {
+						if ($logger->isTraceEnabled()) $logger->trace('Changes for folder [{}]: {} -> {}', [$folderId, $this->sinkStates[$folderId], $newState]);
 						$notifications[] = $folderId;
 						$this->sinkStates[$folderId] = $newState;
 					}
@@ -181,12 +182,12 @@ abstract class AbstractWebTopBackendDiff extends BackendDiff {
 			
 			if (empty($notifications)) {
 				$sleepTime = min($timeout, 30);
-				$logger->debug('({}) no changes, going to sleep ({})', [$timeout, $sleepTime]);
+				if ($logger->isDebugEnabled()) $logger->debug('({}) no changes, going to sleep ({})', [$timeout, $sleepTime]);
 				sleep($sleepTime);
 			}
 		}
 		
-		$logger->debug('({}) returning notifications: [{}]', [$timeout, implode(' ', $notifications)]);
+		if ($logger->isDebugEnabled()) $logger->debug('({}) returning notifications: [{}]', [$timeout, implode(' ', $notifications)]);
 		return $notifications;
 	}
 	
