@@ -14,6 +14,7 @@ abstract class AbstractWebTopBackendDiff extends BackendDiff {
 	private $sinkStates;
 	
 	public function __construct() {
+		$this->foldersCache = [];
 		$this->folderMessagesCache = [];
 		$this->sinkFolders = [];
 		$this->sinkStates = [];
@@ -264,11 +265,13 @@ abstract class AbstractWebTopBackendDiff extends BackendDiff {
 	protected function getApiSyncFolders() {
 		$logger = $this->getLogger();
 		
-		if (!isset($this->folderCache)) {
+		if (empty($this->foldersCache)) {
 			$logger->debug('Building folders cache');
 			$map = $this->doGetApiFolders();
 			if (!is_null($map)) {
-				$this->foldersCache = $map;
+				foreach ($map as $id => $fold) {
+					$this->foldersCache[$id] = $fold;
+				}
 			}
 		}
 		return $this->foldersCache;
