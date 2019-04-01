@@ -9,7 +9,7 @@ define('LOG_ERROR_MASK', ~(E_NOTICE|E_USER_NOTICE|E_STRICT));
 require_once 'vendor/autoload.php';
 
 define('WT_EAS_ROOT', __DIR__);
-\WT\EAS\Config::load('config.json');
+\WT\EAS\Config::load(WT_EAS_ROOT . DIRECTORY_SEPARATOR . 'config.json');
 
 //$ZPUSH_SRC = \WT\EAS\Config::get()->getZPushSrc();
 $ZPUSH_TARGET_SCRIPT = 'z-push-top.php';
