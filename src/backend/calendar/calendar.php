@@ -210,11 +210,15 @@ class BackendCalendar extends AbstractWebTopBackendDiff {
 		$logger = $this->getLogger();
 		$obj = new SyncAppointment();
 		
+		$obj->uid = $item->getId();
 		$obj->timezone = ZPUtil::tzNameToTZBlob($item->getTz());
 		$obj->dtstamp = $this->etagToDate($item->getEtag());
 		$obj->starttime = ZPUtil::parseISODateTime($item->getStart());
+		$obj->endtime = ZPUtil::parseISODateTime($item->getEnd());
+		$obj->alldayevent = $this->toZPSyncAppointmentAllDay($item->getAllDay());
 		$obj->subject = $item->getTitle();
-		$obj->uid = $item->getId();
+		$obj->location = $item->getLocation();
+		
 		/*
 		 * Do not set organizer because Android's allow allow modification 
 		 * only if your account email is equal to the one written into the 
@@ -226,8 +230,13 @@ class BackendCalendar extends AbstractWebTopBackendDiff {
 			$obj->organizeremail = $iaOrg['address'];
 		}
 		*/
-		$obj->location = $item->getLocation();
-		$obj->endtime = ZPUtil::parseISODateTime($item->getEnd());
+		
+		$obj->sensitivity = $this->toZPSyncAppointmentSensitivity($item->getPrvt());
+		$obj->busystatus = $this->toZPSyncAppointmentBusyStatus($item->getBusy());
+		if (!empty($item->getReminder())) {
+			$obj->reminder = $item->getReminder();
+		}
+		
 		if (!empty($item->getRecRule())) {
 			$obj->recurrence = ZPUtil::rruleToMessageRecurrence($item->getRecRule());
 			$dates = $item->getExDates();
@@ -238,12 +247,7 @@ class BackendCalendar extends AbstractWebTopBackendDiff {
 				}
 			}
 		}
-		$obj->sensitivity = $this->toZPSyncAppointmentSensitivity($item->getPrvt());
-		$obj->busystatus = $this->toZPSyncAppointmentBusyStatus($item->getBusy());
-		$obj->alldayevent = $this->toZPSyncAppointmentAllDay($item->getAllDay());
-		if (!empty($item->getReminder())) {
-			$obj->reminder = $item->getReminder();
-		}
+		
 		$obj->meetingstatus = (count($item->getAttendees()) < 1) ? 0 : 1;
 		
 		$atts = $item->getAttendees();
@@ -332,17 +336,23 @@ class BackendCalendar extends AbstractWebTopBackendDiff {
 		if (isset($sync->starttime)) {
 			$obj->setStart(ZPUtil::toISODateTime($sync->starttime));
 		}
+		if (isset($sync->endtime)) {
+			$obj->setEnd(ZPUtil::toISODateTime($sync->endtime));
+		}
+		$obj->setAllDay($this->toApiSyncEventDataAllDay($sync->alldayevent));
 		if (isset($sync->subject)) {
 			$obj->setTitle($sync->subject);
-		}
-		if (isset($sync->organizeremail)) {
-			$obj->setOrganizer(ZPUtil::toInternetAddress($sync->organizeremail, $sync->organizername));
 		}
 		if (isset($sync->location)) {
 			$obj->setLocation($sync->location);
 		}
-		if (isset($sync->endtime)) {
-			$obj->setEnd(ZPUtil::toISODateTime($sync->endtime));
+		if (isset($sync->organizeremail)) {
+			$obj->setOrganizer(ZPUtil::toInternetAddress($sync->organizeremail, $sync->organizername));
+		}
+		$obj->setPrvt($this->toApiSyncEventDataPrivate($sync->sensitivity));
+		$obj->setBusy($this->toApiSyncEventDataBusy($sync->busystatus));
+		if (isset($sync->reminder)) {
+			$obj->setReminder($sync->reminder);
 		}
 		if (isset($sync->recurrence)) {
 			$obj->setRecRule(ZPUtil::messageRecurrenceToRRule($sync->recurrence));
@@ -355,12 +365,6 @@ class BackendCalendar extends AbstractWebTopBackendDiff {
 				}
 				$obj->setExDates($exDates);
 			}
-		}
-		$obj->setPrvt($this->toApiSyncEventDataPrivate($sync->sensitivity));
-		$obj->setBusy($this->toApiSyncEventDataBusy($sync->busystatus));
-		$obj->setAllDay($this->toApiSyncEventDataAllDay($sync->alldayevent));
-		if (isset($sync->reminder)) {
-			$obj->setReminder($sync->reminder);
 		}
 		if (isset($sync->attendees) && is_array($sync->attendees)) {
 			$atts = [];
@@ -497,7 +501,8 @@ class BackendCalendar extends AbstractWebTopBackendDiff {
 	}
 	
 	protected function toApiSyncEventDataAllDay($alldayevent) {
-		return (isset($alldayevent) && ($alldayevent === 1)) ? true : false;
+		// NB: keep equality check (==), do not test if they are identical (===)
+		return (isset($alldayevent) && ($alldayevent == 1)) ? true : false;
 	}
 	
 	protected function toZPSyncAttendeeType($type, $role) {
