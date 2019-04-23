@@ -1,9 +1,11 @@
 <?php
 
 use WT\EAS\Config;
+use WT\EAS\ZPUtil;
 
 abstract class AbstractWebTopBackendDiff extends BackendDiff {
 	const PERMREF_DEVICES_SYNC = 'com.sonicle.webtop.core/DEVICES_SYNC/ACCESS';
+	protected $deviceFamily;
 	//protected $currentDomain;
 	protected $currentUsername;
 	protected $currentPassword;
@@ -49,6 +51,7 @@ abstract class AbstractWebTopBackendDiff extends BackendDiff {
 	public function Logon($username, $domain, $password) {
 		$logger = $this->getLogger();
 		
+		$this->deviceFamily = ZPUtil::getDeviceFamily();
 		try {
 			$api = new \WT\Client\Core\Api\PrincipalsApi(null, $this->getWTApiConfig($username, $password));
 			$item = $api->getPrincipalInfo($username, [self::PERMREF_DEVICES_SYNC]);
@@ -87,6 +90,7 @@ abstract class AbstractWebTopBackendDiff extends BackendDiff {
 	 * @return boolean
 	 */
 	public function Logoff() {
+		unset($this->deviceFamily);
 		//unset($this->currentDomain);
 		unset($this->currentUser);
 		unset($this->currentPassword);

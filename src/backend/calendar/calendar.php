@@ -355,7 +355,7 @@ class BackendCalendar extends AbstractWebTopBackendDiff {
 			$obj->setReminder($sync->reminder);
 		}
 		if (isset($sync->recurrence)) {
-			$obj->setRecRule(ZPUtil::messageRecurrenceToRRule($sync->recurrence));
+			$obj->setRecRule(ZPUtil::messageRecurrenceToRRule($sync->recurrence, $sync->starttime, $obj->getTz(), $this->deviceFamily));
 			if (isset($sync->exceptions) && is_array($sync->exceptions)) {
 				$exDates = [];
 				foreach ($sync->exceptions as $exception) { // Adds every exception as excluded date

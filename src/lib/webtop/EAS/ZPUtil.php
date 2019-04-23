@@ -7,6 +7,11 @@ use Html2Text\Html2Text;
 
 class ZPUtil {
 	
+	const FAMILY_ANDROID = "android";
+	const FAMILY_OUTLOOK = "outlook";
+	const FAMILY_IOS = "ios";
+	const FAMILY_UNKNOWN = "unknown";
+	
 	//DEBUG, INFO, NOTICE, WARNING, ERROR
 	private static $logLevelToZP = [
 		'OFF' => 'OFF',
@@ -16,6 +21,21 @@ class ZPUtil {
 		'DEBUG' => 'DEBUG',
 		'TRACE' => 'WBXML',
 	];
+	
+	public static function getDeviceFamily() {
+		$deviceType = \Request::GetDeviceType();
+		if (stripos($deviceType, "android") > -1) {
+			return self::FAMILY_ANDROID;
+		} else if (stripos($deviceType, "outlook") > -1) {
+			return self::FAMILY_OUTLOOK;
+		} else if (stripos($deviceType, "iphone") > -1) {
+			return self::FAMILY_IOS;
+		} else if (stripos($deviceType, "ipad") > -1) {
+			return self::FAMILY_IOS;
+		} else {
+			return self::FAMILY_UNKNOWN;
+		}
+	}
 	
 	public static function toLogLevel($level) {
 		if (array_key_exists($level, self::$logLevelToZP)) {
@@ -55,16 +75,57 @@ class ZPUtil {
 		return empty($sdate) ? null : \TimezoneUtil::MakeUTCDate($sdate, $tzName);
 	}
 	
-	public static function toISODate($date) {
-		return empty($date) ? null : gmdate("Ymd", $date);
-	}
-	
 	public static function parseISODateTime($sdatetime) {
 		return empty($sdatetime) ? null : \TimezoneUtil::MakeUTCDate($sdatetime, 'UTC');
 	}
 	
+	/**
+	 * Returns a date string formatted in ISO format.
+	 * @param int $date Unix timestamp of date/time
+	 * @return string Formatted string
+	 */
+	public static function toISODate($date) {
+		return empty($date) ? null : gmdate("Ymd", $date);
+	}
+	
+	/**
+	 * Returns a date/time string formatted in ISO format.
+	 * @param int $date Unix timestamp of date/time
+	 * @return string Formatted string
+	 */
 	public static function toISODateTime($date) {
 		return empty($date) ? null : gmdate("Ymd\THis\Z", $date);
+	}
+	
+	/**
+	 * Return a DateTime object corresponding to the passed timestamp and timezone.
+	 * @param int $date Unix timestamp of date/time
+	 * @param string $tzName The timezone name
+	 * @return DateTime DateTime object
+	 */
+	public static function toDateTime($date, $tzName) {
+		//https://www.phpzag.com/convert-unix-timestamp-to-readable-date-time-in-php/
+		$dt = new \DateTime("@$date");
+		$tz = self::getTimezone($tzName);
+		return new \DateTime($dt->format('Y-m-d H:i:s'), $tz);
+	}
+	
+	/**
+	 * Returns a Timezone object corresponding to the passed name, 
+	 * or the default timezone if provided name cannot be recognized.
+	 * @param String $tzName The timezone name
+	 * @return DateTimeZone Timezone object
+	 */
+	public static function getTimezone($tzName) {
+		$tz = null;
+		if ($tzName) {
+			$tz = timezone_open($tzName);
+		}
+		if (!$tz) {
+			//If there is no timezone set, we use the default timezone
+			$tz = timezone_open(date_default_timezone_get());
+		}
+		return $tz;
 	}
 	
 	/**
@@ -372,6 +433,22 @@ class ZPUtil {
 					break;
 
 				case "UNTIL":
+					// Seems that iphones show the until date received as until+1.
+					// This is true only for events created server-side, if the
+					// appointment is defined on the device the until date is
+					// displayed correctly.
+					// The code below try to solve this situation by subtracting 
+					// a day to the end date, but it produces the side-effect 
+					// that during visualization on device the event is one day 
+					// less long. So, keep commented for now!
+					/*
+					$until = \TimezoneUtil::MakeUTCDate($rule[1]);
+					if (is_null($deviceFamily)) $deviceFamily = self::getDeviceFamily();
+					if (self::FAMILY_IOS === $deviceFamily) {
+						$until = strtotime('-1 days', $until);
+					}
+					$recurrence->until = $until;
+					*/
 					$recurrence->until = \TimezoneUtil::MakeUTCDate($rule[1]);
 					break;
 
@@ -448,7 +525,7 @@ class ZPUtil {
 		return $recurrence;
 	}
 	
-	public static function messageRecurrenceToRRule($rec) {
+	public static function messageRecurrenceToRRule($rec, $eventStart, $eventTimezoneName, $deviceFamily = null) {
 		$rrule = array();
 		if (isset($rec->type)) {
 			$freq = "";
@@ -470,7 +547,29 @@ class ZPUtil {
 			$rrule[] = "FREQ=" . $freq;
 		}
 		if (isset($rec->until)) {
-			$rrule[] = "UNTIL=" . gmdate("Ymd\THis\Z", $rec->until);
+			// Seems that android treat until-date chosen from the interface
+			// as until+1 so it automatically pass the until date subtracted 
+			// by 1 day. Also the time seems strange, it's set always at 00:00.
+			// The code below adjust it by adding a day more, but note that 
+			// the android device will display the event with a length of a day 
+			// less until a sync will be performed on that event
+			// We keep commmented only the day modification, the time will be
+			// adjusted according to the start time.
+			$until = $rec->until;
+			if (is_null($deviceFamily)) $deviceFamily = self::getDeviceFamily();
+			if (self::FAMILY_ANDROID === $deviceFamily) {
+				if (isset($eventStart) && isset($eventTimezoneName)) {
+					$eventTz = self::getTimezone($eventTimezoneName);
+					$startDt = self::toDateTime($eventStart, "UTC");
+					$startDt->setTimezone($eventTz);
+					//$sdate = self::toISODate(strtotime('+1 days', $rec->until));
+					$sdate = self::toISODate($rec->until);
+					$stime = $startDt->format('His');
+					$until = \TimezoneUtil::MakeUTCDate($sdate.'T'.$stime, $eventTimezoneName);
+				}
+			}
+			$rrule[] = "UNTIL=" . self::toISODateTime($until);
+			//$rrule[] = "UNTIL=" . gmdate("Ymd\THis\Z", $rec->until);
 		}
 		if (isset($rec->occurrences)) {
 			$rrule[] = "COUNT=" . $rec->occurrences;
