@@ -12,12 +12,16 @@ abstract class AbstractWebTopBackendDiff extends BackendDiff {
 	protected $currentUserInfo;
 	protected $foldersCache;
 	protected $folderMessagesCache;
+	protected $legacyFolderIdsCache;
+	protected $useLegacyIds;
 	private $sinkFolders;
 	private $sinkStates;
 	
 	public function __construct() {
 		$this->foldersCache = [];
 		$this->folderMessagesCache = [];
+		$this->legacyFolderIdsCache = [];
+		$this->useLegacyIds = Config::get()->getUseLegacyFolderIds();
 		$this->sinkFolders = [];
 		$this->sinkStates = [];
 	}
@@ -32,6 +36,77 @@ abstract class AbstractWebTopBackendDiff extends BackendDiff {
 		return $config;
 	}
 	
+	protected function encodeFolderId($id) {
+		$logger = $this->getLogger();
+		$logger->debug('{}({})', [__METHOD__, $id]);
+		
+		if ($this->useLegacyIds === true) {
+			$folder = $this->getApiSyncFolder($id);
+			if (!is_null($folder)) {
+				$entry = $this->buildLegacyFolderIdCacheEntry($folder);
+				if (!is_null($entry)) {
+					if ($logger->isDebugEnabled()) $logger->trace('{} -> {}', [$id, $entry['key']]);
+					return $entry['key'];
+				}
+			}
+			throw new FatalException(sprintf("AbstractWebTopBackendDiff(): Unable to encode folder '%s'", $id), 0, null, LOGLEVEL_FATAL);
+			
+		} else {
+			return $id;
+		}
+	}
+	
+	protected function decodeFolderId($id) {
+		$logger = $this->getLogger();
+		$logger->debug('{}({})', [__METHOD__, $id]);
+		
+		if ($this->useLegacyIds === true) {
+			$logger = $this->getLogger();
+			if (empty($this->legacyFolderIdsCache)) {
+				$logger->debug('Building folder decoding cache');
+				$folders = $this->getApiSyncFolders();
+				if (!is_null($folders)) {
+					foreach ($folders as $folder) {
+						$entry = $this->buildLegacyFolderIdCacheEntry($folder);
+						if (!is_null($entry)) {
+							$key = $entry['key'];
+							if (array_key_exists($key, $this->legacyFolderIdsCache)) {
+								$logger->warn('Duplicated decoding key for "{}", already associated to "{}"', [$key, $entry['value']]);
+							} else {
+								$this->legacyFolderIdsCache[$key] = $entry['value'];
+							}
+						}
+					}
+				}
+			}
+			
+			if (array_key_exists($id, $this->legacyFolderIdsCache)) {
+				if ($logger->isDebugEnabled()) $logger->trace('{} -> {}', [$id, $this->legacyFolderIdsCache[$id]]);
+				return $this->legacyFolderIdsCache[$id];
+			} else {
+				throw new FatalException(sprintf("AbstractWebTopBackendDiff(): Unable to decode folder '%s'", $id), 0, null, LOGLEVEL_FATAL);
+			}
+			
+		} else {
+			return $id;
+		}
+	}
+	
+	protected function buildLegacyFolderIdCacheEntry($item) {
+		//$share->ownerDisplayName . " / " . $share->calendarName . " [" . $share->calendarId . "]";
+		$key = $item->getDisplayName();
+		if ($item->getOwnerId() !== $this->currentUserInfo->getProfileId()) {
+			preg_match('/^\[(.+)\] (.+)$/', $item->getDisplayName(), $matches);
+			if (empty($matches)) return null;
+			$key = $matches[1] . ' / ' . $matches[2] . ' [' . strval($item->getId()) . ']';
+		}
+		
+		return [
+			'key' => $key,
+			'value' => strval($item->getId())
+		];
+	}
+
 	public function GetSupportedASVersion() {
 		//return ZPush::ASV_14;
 		return ZPush::ASV_141;
@@ -179,7 +254,7 @@ abstract class AbstractWebTopBackendDiff extends BackendDiff {
 					if ($logger->isTraceEnabled()) $logger->trace('Checking changes... [{}, {} =? {}]', [$folderId, $this->sinkStates[$folderId], $newState]);
 					if ($this->sinkStates[$folderId] !== $newState) {
 						if ($logger->isTraceEnabled()) $logger->trace('Changes for folder [{}]: {} -> {}', [$folderId, $this->sinkStates[$folderId], $newState]);
-						$notifications[] = $folderId;
+						$notifications[] = $this->encodeFolderId($folderId);
 						$this->sinkStates[$folderId] = $newState;
 					}
 				}
@@ -213,14 +288,16 @@ abstract class AbstractWebTopBackendDiff extends BackendDiff {
 	public function GetFolder($id) {
 		$logger = $this->getLogger();
 		$logger->debug('{}({})', [__METHOD__, $id]);
+		$foId = $this->decodeFolderId($id);
 		
-		$folder = $this->getApiSyncFolder($id);
+		$folder = $this->getApiSyncFolder($foId);
 		return is_null($folder) ? false : $this->toZPSyncFolder($folder);	
 	}
 	
 	public function StatFolder($id) {
 		$logger = $this->getLogger();
 		$logger->debug('{}({})', [__METHOD__, $id]);
+		$foId = $this->decodeFolderId($id);
 		
 		$sf = $this->GetFolder($id);
 		if ($sf === false) return false;
@@ -249,8 +326,9 @@ abstract class AbstractWebTopBackendDiff extends BackendDiff {
 	public function GetMessageList($folderid, $cutoffdate) {
 		$logger = $this->getLogger();
 		$logger->debug('{}({})', [__METHOD__, $folderid]);
+		$foId = $this->decodeFolderId($folderid);
 		
-		$folderMessages = $this->getApiSyncFolderMessages($folderid, $cutoffdate);
+		$folderMessages = $this->getApiSyncFolderMessages($foId, $cutoffdate);
 		if (is_null($folderMessages)) return false;
 		
 		$logger->debug('Returned {} messages', [count($folderMessages)]);

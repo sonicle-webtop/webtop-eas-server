@@ -106,6 +106,9 @@ At the bare minimum, you need to set values to the following options: *log.dir*,
   A path that points to the directory where the state files/directories will be written. (without trailling separator)
   Note that the configured webserver (or php processor) needs to have full read and write permissions on this directory.
 
+* `state.useLegacyFolderIds` \[boolean]
+  True to activate backward compatibility to old `z-push-webtop` folderIDs, this prevents the device from performing a full resync of data after transitioning from `z-push-webtop` to `webtop-eas-server`. *(Defaults to: `false`)*
+
 * &#9888; `webtop.apiBaseUrl` \[string]
   This server relies on REST APIs in order to gather all the information for serving clients. This URL reflects the address at which the current WebTop installation responds to. Note that since this is basically a server-to-server configuration, you could use local addresses; this will speed-up HTTP requests. Eg. `http://localhost:8080/webtop`.
 

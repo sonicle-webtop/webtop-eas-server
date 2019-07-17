@@ -24,6 +24,7 @@ class Config extends AbstractConfig {
 		'log.level' => 'ERROR',
 		'log.name' => 'server.log',
 		'log.error.name' => 'server_error.log',
+		'state.useLegacyFolderIds' => false,
 		'webtop.apiUrlPath' => '/api/com.sonicle.webtop.core/v1',
 		'mail.enabled' => true,
 		'mail.imapServer' => 'localhost',
@@ -72,6 +73,10 @@ class Config extends AbstractConfig {
 	
 	public function getStateDir() {
 		return \WT\Util::stripTrailingDirSeparator($this->getValue('state.dir'));
+	}
+	
+	public function getUseLegacyFolderIds() {
+		return $this->getValue('state.useLegacyFolderIds', $this->defaults);
 	}
 	
 	public function getWTApiBaseURL() {

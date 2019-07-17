@@ -5,7 +5,8 @@
 		"dir": "/var/log/webtop-eas"
 	},
 	"state": {
-		"dir": "/var/lib/webtop-eas/state"
+		"dir": "/var/lib/webtop-eas/state",
+		"useLegacyFolderIds": false
 	},
 	"webtop": {
 		"apiBaseUrl": "http://localhost:8080/webtop",

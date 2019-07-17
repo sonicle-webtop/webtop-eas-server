@@ -68,14 +68,15 @@ class BackendTasks extends AbstractWebTopBackendDiff {
 	public function GetMessage($folderid, $id, $contentparameters) {
 		$logger = $this->getLogger();
 		$logger->debug('{}({}, {})', [__METHOD__, $folderid, $id, $contentparameters]);
+		$foId = $this->decodeFolderId($folderid);
 		$truncsize = Utils::GetTruncSize($contentparameters->GetTruncation());
 		//$mimesupport = $contentparameters->GetMimeSupport();
 		//$bodypreference = $contentparameters->GetBodyPreference(); /* fmbiete's contribution r1528, ZP-320 */
 		
 		try {
 			$api = new \WT\Client\Tasks\Api\EasMessagesApi(null, $this->getTasksApiConfig());
-			$logger->debug('[REST] --> getMessage({}, {})', [$folderid, $id]);
-			$item = $api->getMessage($folderid, $id);
+			$logger->debug('[REST] --> getMessage({}, {})', [$foId, $id]);
+			$item = $api->getMessage($foId, $id);
 			if ($logger->isDebugEnabled()) $logger->debug('[REST] ...'.PHP_EOL.'{}', [$item]);
 			
 			return is_null($item) ? false : $this->toZPSyncTask($item, $truncsize);
@@ -89,33 +90,35 @@ class BackendTasks extends AbstractWebTopBackendDiff {
 	public function StatMessage($folderid, $id) {
 		$logger = $this->getLogger();
 		$logger->debug('{}({}, {})', [__METHOD__, $folderid, $id]);
+		$foId = $this->decodeFolderId($folderid);
 		
-		$stat = $this->getApiSyncFolderMessage($folderid, $id);
+		$stat = $this->getApiSyncFolderMessage($foId, $id);
 		return is_null($stat) ? false : $this->toZPStatMessage($stat);
 	}
 
 	public function ChangeMessage($folderid, $id, $message, $contentParameters) {
 		$logger = $this->getLogger();
 		$logger->debug('{}({}, {})', [__METHOD__, $folderid, $id]);
+		$foId = $this->decodeFolderId($folderid);
 		
 		try {
-			if (!$this->checkFolderElementsPermission($folderid, empty($id) ? 'c' : 'u')) {
-				$logger->debug('Folder {} is not writable', [$folderid]);
+			if (!$this->checkFolderElementsPermission($foId, empty($id) ? 'c' : 'u')) {
+				$logger->debug('Folder {} is not writable', [$foId]);
 				return false;
 			}
 			
 			$body = $this->toApiSyncTaskUpdate($message);
 			$api = new \WT\Client\Tasks\Api\EasMessagesApi(null, $this->getTasksApiConfig());
 			if (empty($id)) {
-				$logger->debug('[REST] --> addMessage({})', [$folderid]);
-				$stat = $api->addMessage($folderid, $body);
+				$logger->debug('[REST] --> addMessage({})', [$foId]);
+				$stat = $api->addMessage($foId, $body);
 				
 			} else {
-				$logger->debug('[REST] --> updateMessage({}, {})', [$folderid, $id]);
-				$stat = $api->updateMessage($folderid, $id, $body);
+				$logger->debug('[REST] --> updateMessage({}, {})', [$foId, $id]);
+				$stat = $api->updateMessage($foId, $id, $body);
 			}
 			if ($logger->isDebugEnabled()) $logger->debug('[REST] ...'.PHP_EOL.'{}', [$stat]);
-			$this->updateApiSyncFolderMessage($folderid, $id, $stat); // Update cached stat info!
+			$this->updateApiSyncFolderMessage($foId, $id, $stat); // Update cached stat info!
 			
 			return $this->toZPStatMessage($stat);
 
@@ -138,17 +141,18 @@ class BackendTasks extends AbstractWebTopBackendDiff {
 	public function DeleteMessage($folderid, $id, $contentParameters) {
 		$logger = $this->getLogger();
 		$logger->debug('{}({}, {})', [__METHOD__, $folderid, $id]);
+		$foId = $this->decodeFolderId($folderid);
 		
 		try {
-			if (!$this->checkFolderElementsPermission($folderid, 'd')) {
-				$logger->debug('Folder {} is not writable', [$folderid]);
+			if (!$this->checkFolderElementsPermission($foId, 'd')) {
+				$logger->debug('Folder {} is not writable', [$foId]);
 				return false;
 			}
 			
 			$api = new \WT\Client\Tasks\Api\EasMessagesApi(null, $this->getTasksApiConfig());
-			$logger->debug('[REST] --> deleteMessage({}, {})', [$folderid, $id]);
-			$api->deleteMessage($folderid, $id);
-			$this->updateApiSyncFolderMessage($folderid, $id, null); // Update cached stat info!
+			$logger->debug('[REST] --> deleteMessage({}, {})', [$foId, $id]);
+			$api->deleteMessage($foId, $id);
+			$this->updateApiSyncFolderMessage($foId, $id, null); // Update cached stat info!
 			
 			return true;
 
@@ -165,7 +169,7 @@ class BackendTasks extends AbstractWebTopBackendDiff {
 	protected function toZPStatFolder($item) { // Due to inheritance, we need to omit param type!
 	//protected function toZPStatFolder(\WT\Client\Tasks\Model\SyncFolder $item) {
 		return $this->createZPStatFolder(
-			strval($item->getId()),
+			$this->encodeFolderId(strval($item->getId())),
 			'0',
 			$item->getDisplayName()
 		);
@@ -174,7 +178,7 @@ class BackendTasks extends AbstractWebTopBackendDiff {
 	protected function toZPSyncFolder($item) { // Due to inheritance, we need to omit param type!
 	//protected function toZPSyncFolder(\WT\Client\Tasks\Model\SyncFolder $item) {
 		$obj = new SyncFolder();
-		$obj->serverid = strval($item->getId());
+		$obj->serverid = $this->encodeFolderId(strval($item->getId()));
 		$obj->parentid = '0';
 		//$obj->parentid = $item->getOwnerUsername();
 		$obj->displayname = $item->getDisplayName();
