@@ -71,6 +71,11 @@ class Config extends AbstractConfig {
 		return $this->getValue('log.error.name', $this->defaults);
 	}
 	
+	public function getLogSpecialUsers() {
+		$value = $this->getValue('log.specialUsers');
+		return is_array($value) ? $value : array();
+	}
+	
 	public function getStateDir() {
 		return \WT\Util::stripTrailingDirSeparator($this->getValue('state.dir'));
 	}

@@ -18,24 +18,29 @@ class ZPLoggerAdapter extends LocationLogger {
 		return $this->name;
 	}
 	
+	public function hasSpecialLogUsers() {
+		global $specialLogUsers; // This variable comes from the configuration file (config.php)
+		return !empty($specialLogUsers);
+	}
+	
 	public function isDebugEnabled() {
-		return constant('LOGLEVEL') >= LOGLEVEL_DEBUG;
+		return constant('LOGLEVEL') >= LOGLEVEL_DEBUG || (constant('LOGUSERLEVEL') >= LOGLEVEL_DEBUG && $this->hasSpecialLogUsers());
 	}
 
 	public function isErrorEnabled() {
-		return constant('LOGLEVEL') >= LOGLEVEL_FATAL;
+		return constant('LOGLEVEL') >= LOGLEVEL_FATAL || (constant('LOGUSERLEVEL') >= LOGLEVEL_FATAL && $this->hasSpecialLogUsers());
 	}
 
 	public function isInfoEnabled() {
-		return constant('LOGLEVEL') >= LOGLEVEL_INFO;
+		return constant('LOGLEVEL') >= LOGLEVEL_INFO || (constant('LOGUSERLEVEL') >= LOGLEVEL_INFO && $this->hasSpecialLogUsers());
 	}
 
 	public function isTraceEnabled() {
-		return constant('LOGLEVEL') >= LOGLEVEL_WBXML;
+		return constant('LOGLEVEL') >= LOGLEVEL_WBXML || (constant('LOGUSERLEVEL') >= LOGLEVEL_WBXML && $this->hasSpecialLogUsers());
 	}
 
 	public function isWarnEnabled() {
-		return constant('LOGLEVEL') >= LOGLEVEL_WARN;
+		return constant('LOGLEVEL') >= LOGLEVEL_WARN || (constant('LOGUSERLEVEL') >= LOGLEVEL_WARN && $this->hasSpecialLogUsers());
 	}
 	
 	public function debug($format, $params = array(), \Exception $e = null) {

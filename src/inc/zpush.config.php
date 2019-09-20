@@ -111,8 +111,8 @@
     // Users have to be encapusulated in quotes, several users are comma separated, like:
     //   $specialLogUsers = array('info@domain.com', 'myusername');
     define('LOGUSERLEVEL', LOGLEVEL_DEVICEID);
-    $specialLogUsers = array();
-
+	$specialLogUsers = \WT\EAS\Config::get()->getLogSpecialUsers();
+	
     // Filelog settings
     define('LOGFILEDIR', \WT\EAS\Config::get()->getLogDir() . '/');
     define('LOGFILE', LOGFILEDIR . \WT\EAS\Config::get()->getLogName());
