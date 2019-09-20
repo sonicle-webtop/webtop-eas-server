@@ -102,6 +102,10 @@ At the bare minimum, you need to set values to the following options: *log.dir*,
 * `log.error.name` \[string]
   The error log filename. *(Defaults to: `server_error.log`)*
 
+* `log.specialUsers` \[string[]]
+  Comma separated list of users for which generate a dedicated log file in order to simplify debugging.
+  Files will be produced in `log.dir` at `TRACE` loggin level.
+
 * &#9888; `state.dir` \[string]
   A path that points to the directory where the state files/directories will be written. (without trailling separator)
   Note that the configured webserver (or php processor) needs to have full read and write permissions on this directory.
