@@ -15,8 +15,8 @@ class ZPUtil {
 	//DEBUG, INFO, NOTICE, WARNING, ERROR
 	private static $logLevelToZP = [
 		'OFF' => 'OFF',
-		'ERROR' => 'ERROR', // ERROR+FATAL
-		'WARN' => 'WARN',
+		'ERROR' => 'FATAL',
+		'WARN' => 'WARN', // ERROR+WARN
 		'INFO' => 'INFO',
 		'DEBUG' => 'DEBUG',
 		'TRACE' => 'WBXML',
