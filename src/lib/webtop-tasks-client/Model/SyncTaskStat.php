@@ -58,7 +58,7 @@ class SyncTaskStat implements ModelInterface, ArrayAccess
       * @var string[]
       */
     protected static $swaggerTypes = [
-        'id' => 'int',
+        'id' => 'string',
         'etag' => 'string'
     ];
 
@@ -227,7 +227,7 @@ class SyncTaskStat implements ModelInterface, ArrayAccess
     /**
      * Gets id
      *
-     * @return int
+     * @return string
      */
     public function getId()
     {
@@ -237,7 +237,7 @@ class SyncTaskStat implements ModelInterface, ArrayAccess
     /**
      * Sets id
      *
-     * @param int $id Task ID (internal)
+     * @param string $id Task ID (internal)
      *
      * @return $this
      */

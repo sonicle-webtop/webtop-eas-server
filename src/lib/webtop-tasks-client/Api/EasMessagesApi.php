@@ -375,7 +375,7 @@ class EasMessagesApi
      * Deletes a message
      *
      * @param  int $folderId Folder ID (required)
-     * @param  int $id Message ID (required)
+     * @param  string $id Message ID (required)
      *
      * @throws \WT\Client\Tasks\ApiException on non-2xx response
      * @throws \InvalidArgumentException
@@ -392,7 +392,7 @@ class EasMessagesApi
      * Deletes a message
      *
      * @param  int $folderId Folder ID (required)
-     * @param  int $id Message ID (required)
+     * @param  string $id Message ID (required)
      *
      * @throws \WT\Client\Tasks\ApiException on non-2xx response
      * @throws \InvalidArgumentException
@@ -446,7 +446,7 @@ class EasMessagesApi
      * Deletes a message
      *
      * @param  int $folderId Folder ID (required)
-     * @param  int $id Message ID (required)
+     * @param  string $id Message ID (required)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
@@ -467,7 +467,7 @@ class EasMessagesApi
      * Deletes a message
      *
      * @param  int $folderId Folder ID (required)
-     * @param  int $id Message ID (required)
+     * @param  string $id Message ID (required)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
@@ -504,7 +504,7 @@ class EasMessagesApi
      * Create request for operation 'deleteMessage'
      *
      * @param  int $folderId Folder ID (required)
-     * @param  int $id Message ID (required)
+     * @param  string $id Message ID (required)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
@@ -625,7 +625,7 @@ class EasMessagesApi
      * Get a single message
      *
      * @param  int $folderId Folder ID (required)
-     * @param  int $id Message ID (required)
+     * @param  string $id Message ID (required)
      *
      * @throws \WT\Client\Tasks\ApiException on non-2xx response
      * @throws \InvalidArgumentException
@@ -643,7 +643,7 @@ class EasMessagesApi
      * Get a single message
      *
      * @param  int $folderId Folder ID (required)
-     * @param  int $id Message ID (required)
+     * @param  string $id Message ID (required)
      *
      * @throws \WT\Client\Tasks\ApiException on non-2xx response
      * @throws \InvalidArgumentException
@@ -719,7 +719,7 @@ class EasMessagesApi
      * Get a single message
      *
      * @param  int $folderId Folder ID (required)
-     * @param  int $id Message ID (required)
+     * @param  string $id Message ID (required)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
@@ -740,7 +740,7 @@ class EasMessagesApi
      * Get a single message
      *
      * @param  int $folderId Folder ID (required)
-     * @param  int $id Message ID (required)
+     * @param  string $id Message ID (required)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
@@ -791,7 +791,7 @@ class EasMessagesApi
      * Create request for operation 'getMessage'
      *
      * @param  int $folderId Folder ID (required)
-     * @param  int $id Message ID (required)
+     * @param  string $id Message ID (required)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
@@ -1190,7 +1190,7 @@ class EasMessagesApi
      * Updates a message
      *
      * @param  int $folderId Folder ID (required)
-     * @param  int $id Message ID (required)
+     * @param  string $id Message ID (required)
      * @param  \WT\Client\Tasks\Model\SyncTaskUpdate $body body (required)
      *
      * @throws \WT\Client\Tasks\ApiException on non-2xx response
@@ -1209,7 +1209,7 @@ class EasMessagesApi
      * Updates a message
      *
      * @param  int $folderId Folder ID (required)
-     * @param  int $id Message ID (required)
+     * @param  string $id Message ID (required)
      * @param  \WT\Client\Tasks\Model\SyncTaskUpdate $body (required)
      *
      * @throws \WT\Client\Tasks\ApiException on non-2xx response
@@ -1286,7 +1286,7 @@ class EasMessagesApi
      * Updates a message
      *
      * @param  int $folderId Folder ID (required)
-     * @param  int $id Message ID (required)
+     * @param  string $id Message ID (required)
      * @param  \WT\Client\Tasks\Model\SyncTaskUpdate $body (required)
      *
      * @throws \InvalidArgumentException
@@ -1308,7 +1308,7 @@ class EasMessagesApi
      * Updates a message
      *
      * @param  int $folderId Folder ID (required)
-     * @param  int $id Message ID (required)
+     * @param  string $id Message ID (required)
      * @param  \WT\Client\Tasks\Model\SyncTaskUpdate $body (required)
      *
      * @throws \InvalidArgumentException
@@ -1360,7 +1360,7 @@ class EasMessagesApi
      * Create request for operation 'updateMessage'
      *
      * @param  int $folderId Folder ID (required)
-     * @param  int $id Message ID (required)
+     * @param  string $id Message ID (required)
      * @param  \WT\Client\Tasks\Model\SyncTaskUpdate $body (required)
      *
      * @throws \InvalidArgumentException
