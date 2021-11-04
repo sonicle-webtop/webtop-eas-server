@@ -267,33 +267,44 @@ class BackendTasks extends AbstractWebTopBackendDiff {
 	}
 	
 	protected function toZPSyncTaskComplete($status) {
-		return ($status === 'completed') ? '1' : '0';
+		return ($status === 'CO') ? '1' : '0';
 	}
 	
 	protected function toZPSyncTaskImportance($impo) {
-		// AS Sensitivity values
-		// 0 = Low
-		// 1 = Normal
-		// 2 = High
-		if ($impo === 0) {
-			return '0';
-		} else if ($impo === 1) {
-			return '1';
-		} else {
+		// AS Sensitivity values:
+		//  0 -> Low
+		//  1 -> Normal
+		//  2 -> High
+		if ($impo >= 1 && $impo < 5) {
 			return '2';
+		} else if ($impo > 5 && $impo <= 9) {
+			return '0';
+		} else {
+			return '1';
 		}
 	}
 	
 	protected function toApiSyncTaskImportance($asImpo) {
-		return isset($asImpo) ? intval($asImpo) : 1;
+		// API importance values:
+		//  1..4 -> High
+		//  5    -> Normal/Medium
+		//  6..9 -> Low
+		if (isset($asImpo)) {
+			if (intval($asImpo) === 0) {
+				return 9;
+			} else if (intval($asImpo) === 2) {
+				return 1;
+			}
+		}
+		return 5;
 	}
 	
 	protected function toZPSyncTaskSensitivity($prvt) {
 		// AS Sensitivity values
-		// 0 = Normal
-		// 1 = Personal
-		// 2 = Private
-		// 3 = Confident
+		//  0 -> Normal
+		//  1 -> Personal
+		//  2 -> Private
+		//  3 -> Confident
 		return ($prvt === true) ? '2' : '0';
 	}
 	
