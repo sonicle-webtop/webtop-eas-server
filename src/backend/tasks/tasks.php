@@ -233,11 +233,11 @@ class BackendTasks extends AbstractWebTopBackendDiff {
 		if (isset($sync->subject)) {
 			$obj->setSubject($sync->subject);
 		}
-		if (isset($sync->startdate)) {
-			$obj->setStart(ZPUtil::toISODateTime($sync->startdate));
+		if (isset($sync->utcstartdate)) {
+			$obj->setStart(ZPUtil::toISODateTime($sync->utcstartdate));
 		}
-		if (isset($sync->duedate)) {
-			$obj->setDue(ZPUtil::toISODateTime($sync->duedate));
+		if (isset($sync->utcduedate)) {
+			$obj->setDue(ZPUtil::toISODateTime($sync->utcduedate));
 		}
 		if (isset($sync->complete) && ($sync->complete === '1')) {
 			if (isset($sync->datecompleted)) {
