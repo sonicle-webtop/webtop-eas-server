@@ -3,6 +3,7 @@
 use lf4php\LoggerFactory;
 use WT\EAS\Config;
 use WT\EAS\ZPUtil;
+use DataURI;
 
 class BackendContacts extends AbstractWebTopBackendDiff {
 	
@@ -53,7 +54,7 @@ class BackendContacts extends AbstractWebTopBackendDiff {
 		'anniversary' => 'anniversary',
 		'webpage' => 'url',
 		'body'	=> 'notes',
-		//'picture' => 'picture',
+		'picture' => 'picture',
 	];
 
 	protected function getContactsApiConfig() {
@@ -267,18 +268,19 @@ class BackendContacts extends AbstractWebTopBackendDiff {
 						}
 					}
 					break;
-				/*	
-				//TODO: add support to pictures
 				case 'picture':
-					//https://github.com/b1gMail/zpush-b1gmail/blob/zpush-22/b1gmail.php
 					if (!empty($item->offsetGet($wtName))) {
-						$dataUri = null;
-						//if (DataUri::tryParse($item->offsetGet($wtName), $dataUri) === true) {
-						//	$dataUri
-						//}
+						if ($logger->isDebugEnabled()) $logger->debug('Unpacking picture Data URI...');
+						$pic = ZPUtil::dataUriToPicture(DataURI\Parser::parse($item->offsetGet($wtName)));
+						if (!is_null($pic)) {
+							if ($logger->isDebugEnabled()) $logger->debug('Unpacked: {} - {} bytes', [$pic['mediaType'], strlen($pic['data'])]);
+							//https://github.com/b1gMail/zpush-b1gmail/blob/zpush-22/b1gmail.php#L1597
+							//if (strlen($pic['data']) <= 49152) { // Do not attach too big images to avoid Z-Push dropping the entire contact
+								$obj->$zpName = $pic['data'];
+							//}
+						}
 					}
 					break;
-				*/
 				case 'birthday':
 				case 'anniversary':
 					$v = $item->offsetGet($wtName);
@@ -308,15 +310,19 @@ class BackendContacts extends AbstractWebTopBackendDiff {
 						$obj->offsetSet($wtName, ZPUtil::messageBodyToNoteLT12($item->body, $item->bodytruncated, $item->bodysize));
 					}
 					break;
-				/*
-				//TODO: add support to pictures
 				case 'picture':
+					$pic = null;
 					if (!empty($item->$zpName)) {
-						$dataUri = DataUri::image($item->$zpName, true);
-						$obj->offsetSet($wtName, $dataUri->toString());
+						if ($logger->isDebugEnabled()) $logger->debug('Packing picture into Data URI...');
+						//https://github.com/b1gMail/zpush-b1gmail/blob/zpush-22/b1gmail.php#L1998
+						$dataUri = ZPUtil::pictureToDataUri($item->$zpName);
+						if (!is_null($dataUri)) {
+							if ($logger->isDebugEnabled()) $logger->debug('Packed: {} - {} bytes', [$dataUri->getMimeType(), strlen($dataUri->getData())]);
+							$pic = DataURI\Dumper::dump($dataUri);
+						}
 					}
+					$obj->offsetSet($wtName, $pic);
 					break;
-				*/
 				case 'birthday':
 				case 'anniversary':
 					$obj->offsetSet($wtName, ZPUtil::toISODate($item->$zpName));

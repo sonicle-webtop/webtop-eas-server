@@ -8,4 +8,5 @@ $baseDir = dirname($vendorDir);
 return array(
     'lf4php' => array($baseDir . '/lf4php', $vendorDir . '/lf4php/lf4php/src'),
     'LazyMap\\' => array($vendorDir . '/ocramius/lazy-map/src'),
+    'DataURI' => array($vendorDir . '/data-uri/data-uri/src'),
 );

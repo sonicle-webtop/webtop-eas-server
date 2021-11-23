@@ -45,6 +45,24 @@ class Util {
 		return is_null($path) ? $path : trim($path, $separator);
 	}
 	
+	public static function guessMediaType($rawData) {
+		$finfo = finfo_open();
+		$mtype = finfo_buffer($finfo, $rawData, FILEINFO_MIME_TYPE);
+		finfo_close($finfo);
+		return $mtype == false ? null : $mtype;
+		/*
+		if (substr($rawData, 0, 4) == '\x47\x49\x46\x38') {
+			return 'image/gif';
+		} else if (substr($rawData, 0, 4) == '\xFF\xD8\xFF\xE0') {
+			return 'image/jpg';
+		} else if (substr($rawData, 0, 4) == '\x89\x50\x4E\x47') {
+			return 'image/png';
+		} else {
+			return null;
+		}
+		*/
+	}
+	
 	/*
 	public static function parseRfc822($rfc822) {
 		if (function_exists('imap_rfc822_parse_adrlist')) {
@@ -64,36 +82,6 @@ class Util {
 		
 		//$logger->debug('{} Warning : php-imap not available', [__METHOD__]);
 		return null;		
-	}
-	*/
-	
-	/**
-	 * Guess MIME type of a picture by picture file signature.
-	 * 
-	 * @param string $data Image data (at least the first 4 bytes)
-	 * @return string MIME type
-	 */
-	public static function guessImageMediaType($data) {
-		if (substr($data, 0, 4) == '\x47\x49\x46\x38') {
-			return('image/gif');
-		} else if (substr($data, 0, 4) == '\xFF\xD8\xFF\xE0') {
-			return('image/jpg');
-		} else if (substr($data, 0, 4) == '\x89\x50\x4E\x47') {
-			return('image/png');
-		} else {
-			return('image/unknown');
-		}
-	}
-	
-	/*
-	public static function image($data, $dataIsBase64 = false, $mediaType = '') {
-		$mtype = $mediaType;
-		if (empty($mtype)) {
-			$raw = ($dataIsBase64 === true) ? base64_decode($data) : $data;
-			$mtype = function_exists('mime_content_type') ? mime_content_type($raw) : 'image/unknown';
-		}
-		$data64 = ($dataIsBase64 === true) ? $data : base64_encode($data);
-		return new DataUri($mtype, $data64, DataUri::ENCODING_BASE64);
 	}
 	*/
 	

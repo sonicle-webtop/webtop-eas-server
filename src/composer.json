@@ -11,12 +11,18 @@
         }
     ],
 	"optimize-autoloader": true,
+	"config": {
+		"platform": {
+			"php": "7.0"
+		}
+	},
     "require": {
 		"php": ">=5.5.0",
 		"lf4php/lf4php": "^4.2.2",
 		"hassankhan/config": "^1.0",
 		"guzzlehttp/guzzle": "^6.2",
-        "html2text/html2text": "^4.2"
+        "html2text/html2text": "^4.2",
+		"data-uri/data-uri": "^0.2.5"
 	},
 	"autoload": {
 		"psr-0": {

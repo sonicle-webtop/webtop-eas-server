@@ -11,6 +11,8 @@ return array(
     'WT\\Client\\Contacts\\' => array($baseDir . '/lib/webtop-contacts-client'),
     'WT\\Client\\Calendar\\' => array($baseDir . '/lib/webtop-calendar-client'),
     'WT\\' => array($baseDir . '/lib/webtop'),
+    'Symfony\\Polyfill\\Mbstring\\' => array($vendorDir . '/symfony/polyfill-mbstring'),
+    'Symfony\\Component\\HttpFoundation\\' => array($vendorDir . '/symfony/http-foundation'),
     'Psr\\Http\\Message\\' => array($vendorDir . '/psr/http-message/src'),
     'Noodlehaus\\' => array($vendorDir . '/hassankhan/config/src'),
     'Html2Text\\' => array($vendorDir . '/html2text/html2text/src', $vendorDir . '/html2text/html2text/test'),

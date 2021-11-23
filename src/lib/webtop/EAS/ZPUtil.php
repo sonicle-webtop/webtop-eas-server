@@ -4,6 +4,8 @@ namespace WT\EAS;
 
 use lf4php\LoggerFactory;
 use Html2Text\Html2Text;
+use WT\Util;
+use DataURI;
 
 class ZPUtil {
 	
@@ -407,6 +409,36 @@ class ZPUtil {
 		return $ret;
 	}
 	
+	public static function dataUriToPicture($dataUri) {
+		$ret = null;
+		if (!is_null($dataUri) && strpos($dataUri->getMimeType(), 'image/') === 0) {
+			$ret = [
+				// Encode base64 again: getData returns the raw value!
+				'data' => base64_encode($dataUri->getData()),
+				//'data' => ($dataIsBase64 === true) ? $dataUri->getData() : base64_encode($dataUri->getData()),
+				'mimeType' => $dataUri->getMimeType()
+			];
+		}
+		return $ret;
+	}
+	
+	public static function pictureToDataUri($picData, $mediaType = '') {
+		$ret = null;
+		if (!empty($picData)) {
+			$mtype = $mediaType;
+			if (empty($mtype)) {
+				$raw = base64_decode($picData);
+				$mtype = Util::guessMediaType($raw);
+			}
+			if (is_null($mtype) || empty($mtype)) {
+				$mtype = 'image/unknown';
+			}
+			$ret = new DataURI\Data($raw, $mtype);
+			$ret->setBinaryData(true);
+		}
+		return $ret;
+	}
+	
 	public static function rruleToMessageRecurrence($rrulestr, $task = false) {
 		$recurrence = new \SyncRecurrence();
 		if ($task === true) {
@@ -642,5 +674,4 @@ class ZPUtil {
 		}
 		return implode(";", $rrule);
 	}
-
 }
