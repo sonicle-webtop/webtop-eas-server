@@ -9,4 +9,5 @@ return array(
     'AbstractWebTopBackendDiff' => $baseDir . '/backend/webtop/AbstractWebTopBackendDiff.php',
     'BackendWebTop' => $baseDir . '/backend/webtop/webtop.php',
     'Composer\\InstalledVersions' => $vendorDir . '/composer/InstalledVersions.php',
+    'Normalizer' => $vendorDir . '/symfony/polyfill-intl-normalizer/Resources/stubs/Normalizer.php',
 );
