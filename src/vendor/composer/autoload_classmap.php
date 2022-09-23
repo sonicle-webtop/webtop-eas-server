@@ -10,4 +10,5 @@ return array(
     'BackendWebTop' => $baseDir . '/backend/webtop/webtop.php',
     'Composer\\InstalledVersions' => $vendorDir . '/composer/InstalledVersions.php',
     'Normalizer' => $vendorDir . '/symfony/polyfill-intl-normalizer/Resources/stubs/Normalizer.php',
+    'ZPCore' => $baseDir . '/backend/log/zpcore.php',
 );

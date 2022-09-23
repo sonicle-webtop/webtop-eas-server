@@ -102,7 +102,7 @@
  *
  *  LOGAUTHFAIL is logged to the LOGBACKEND.
  */
-    define('LOGBACKEND', 'filelog');
+	define('LOGBACKEND', 'ZPCore');
 	define('LOGLEVEL', \WT\EAS\ZPUtil::toLogLevel(\WT\EAS\Config::get()->getLogLevel()));
     define('LOGAUTHFAIL', false);
 	
@@ -113,12 +113,12 @@
     define('LOGUSERLEVEL', LOGLEVEL_DEVICEID);
 	$specialLogUsers = \WT\EAS\Config::get()->getLogSpecialUsers();
 	
-    // Filelog settings
-    define('LOGFILEDIR', \WT\EAS\Config::get()->getLogDir() . '/');
-    define('LOGFILE', LOGFILEDIR . \WT\EAS\Config::get()->getLogName());
-    define('LOGERRORFILE', LOGFILEDIR . \WT\EAS\Config::get()->getErrorLogName());
+    // Filelog settings (not used, see LOGBACKEND above)
+	define('LOGFILEDIR', '/var/log/z-push/');
+    define('LOGFILE', LOGFILEDIR . 'z-push.log');
+    define('LOGERRORFILE', LOGFILEDIR . 'z-push-error.log');
 
-    // Syslog settings
+    // Syslog settings (not used, see LOGBACKEND above)
     // false will log to local syslog, otherwise put the remote syslog IP here
     define('LOG_SYSLOG_HOST', false);
     // Syslog port

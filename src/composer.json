@@ -14,17 +14,16 @@
     "require": {
 		"php": ">=7.0",
 		"lf4php/lf4php": "^4.2.2",
+		"lf4php/lf4php-monolog": "^3.1.2",
+		"monolog/monolog": "^1.27",
 		"hassankhan/config": "^1.0",
-		"guzzlehttp/guzzle": "^6.5.7",
+		"guzzlehttp/guzzle": "^6.5.8",
         "html2text/html2text": "^4.2",
 		"symfony/yaml": "~3.4",
 		"symfony/http-foundation": "~3.4.47",
 		"data-uri/data-uri": "^0.2.5"
 	},
 	"autoload": {
-		"psr-0": {
-			"lf4php": "lf4php/"
-		},
 		"psr-4": {
 			"WT\\": "lib/webtop/",
 			"WT\\Client\\Core\\": "lib/webtop-core-client/",
@@ -33,6 +32,7 @@
 			"WT\\Client\\Tasks\\": "lib/webtop-tasks-client/"
 		},
 		"classmap": [
+			"backend/log/",
 			"backend/webtop/"
 		],
 		"files": [

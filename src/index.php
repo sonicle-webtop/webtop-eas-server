@@ -10,6 +10,8 @@ require_once 'vendor/autoload.php';
 
 define('WT_EAS_ROOT', __DIR__);
 \WT\EAS\Config::load(WT_EAS_ROOT . DIRECTORY_SEPARATOR . 'config.json');
+$config = \WT\EAS\Config::get();
+\WT\Log::init('eas-server', $config->getLogLevel(), $config->getLogFile());
 
 $ZPUSH_TARGET_SCRIPT = 'index.php';
 include WT_EAS_ROOT.'/inc/zpush.php';

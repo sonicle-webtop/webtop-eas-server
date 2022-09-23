@@ -67,6 +67,15 @@ class Config extends AbstractConfig {
 		return $this->getValue('log.name', $this->defaults);
 	}
 	
+	public function getLogFile() {
+		$v = $this->getValue('log.file', $this->defaults);
+		if (!empty($v)) {
+			return $v;
+		} else {
+			return $this->getLogDir().'/'.$this->getLogName();
+		}
+	}
+	
 	public function getErrorLogName() {
 		return $this->getValue('log.error.name', $this->defaults);
 	}

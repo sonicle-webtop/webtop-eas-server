@@ -12,9 +12,9 @@ class ComposerStaticInitb5c69df844eba00a99a848b618335af6
         'e69f7f6ee287b969198c3c9d6777bd38' => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer/bootstrap.php',
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
         '25072dd6e2470089de65ae7bf11d3109' => __DIR__ . '/..' . '/symfony/polyfill-php72/bootstrap.php',
-        'c964ee0ededf28c96ebd9db5099ef910' => __DIR__ . '/..' . '/guzzlehttp/promises/src/functions_include.php',
-        'a0edc8309cc5e1d60e3047b5df6b7052' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/functions_include.php',
         'f598d06aa772fa33d905e87be6398fb1' => __DIR__ . '/..' . '/symfony/polyfill-intl-idn/bootstrap.php',
+        'a0edc8309cc5e1d60e3047b5df6b7052' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/functions_include.php',
+        'c964ee0ededf28c96ebd9db5099ef910' => __DIR__ . '/..' . '/guzzlehttp/promises/src/functions_include.php',
         '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
         '21cf0be54ee71e98be5f714fcd408ccf' => __DIR__ . '/../..' . '/package-info.php',
         '84c4ea78c0b9fa5bfcd59f33faa33d3b' => __DIR__ . '/..' . '/z-push/z-push/src/vendor/autoload.php',
@@ -41,11 +41,16 @@ class ComposerStaticInitb5c69df844eba00a99a848b618335af6
         ),
         'P' => 
         array (
+            'Psr\\Log\\' => 8,
             'Psr\\Http\\Message\\' => 17,
         ),
         'N' => 
         array (
             'Noodlehaus\\' => 11,
+        ),
+        'M' => 
+        array (
+            'Monolog\\' => 8,
         ),
         'H' => 
         array (
@@ -108,6 +113,10 @@ class ComposerStaticInitb5c69df844eba00a99a848b618335af6
         array (
             0 => __DIR__ . '/..' . '/symfony/http-foundation',
         ),
+        'Psr\\Log\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/log/Psr/Log',
+        ),
         'Psr\\Http\\Message\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/http-message/src',
@@ -115,6 +124,10 @@ class ComposerStaticInitb5c69df844eba00a99a848b618335af6
         'Noodlehaus\\' => 
         array (
             0 => __DIR__ . '/..' . '/hassankhan/config/src',
+        ),
+        'Monolog\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/monolog/monolog/src/Monolog',
         ),
         'Html2Text\\' => 
         array (
@@ -140,8 +153,8 @@ class ComposerStaticInitb5c69df844eba00a99a848b618335af6
         array (
             'lf4php' => 
             array (
-                0 => __DIR__ . '/../..' . '/lf4php',
-                1 => __DIR__ . '/..' . '/lf4php/lf4php/src',
+                0 => __DIR__ . '/..' . '/lf4php/lf4php/src',
+                1 => __DIR__ . '/..' . '/lf4php/lf4php-monolog/src',
             ),
         ),
         'L' => 
@@ -165,6 +178,7 @@ class ComposerStaticInitb5c69df844eba00a99a848b618335af6
         'BackendWebTop' => __DIR__ . '/../..' . '/backend/webtop/webtop.php',
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
         'Normalizer' => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer/Resources/stubs/Normalizer.php',
+        'ZPCore' => __DIR__ . '/../..' . '/backend/log/zpcore.php',
     );
 
     public static function getInitializer(ClassLoader $loader)

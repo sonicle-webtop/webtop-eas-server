@@ -3,7 +3,6 @@
 use lf4php\LoggerFactory;
 use WT\EAS\Config;
 use WT\EAS\ZPUtil;
-use DataURI;
 
 class BackendContacts extends AbstractWebTopBackendDiff {
 	
