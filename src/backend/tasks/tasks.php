@@ -28,7 +28,7 @@ class BackendTasks extends AbstractWebTopBackendDiff {
 		$logger = $this->getLogger();
 		
 		try {
-			$api = new \WT\Client\Tasks\Api\EasFoldersApi(null, $this->getTasksApiConfig());
+			$api = new \WT\Client\Tasks\Api\EasApi(null, $this->getTasksApiConfig());
 			$logger->debug('[REST] --> getFolders()');
 			$items = $api->getFolders();
 			$map = [];
@@ -48,7 +48,7 @@ class BackendTasks extends AbstractWebTopBackendDiff {
 		$logger = $this->getLogger();
 		
 		try {
-			$api = new \WT\Client\Tasks\Api\EasMessagesApi(null, $this->getTasksApiConfig());
+			$api = new \WT\Client\Tasks\Api\EasApi(null, $this->getTasksApiConfig());
 			$logger->debug('[REST] --> getMessagesStats({})', [$folderId]);
 			$items = $api->getMessagesStats($folderId, $isoCutoffDate);
 			$map = [];
@@ -74,7 +74,7 @@ class BackendTasks extends AbstractWebTopBackendDiff {
 		//$bodypreference = $contentparameters->GetBodyPreference(); /* fmbiete's contribution r1528, ZP-320 */
 		
 		try {
-			$api = new \WT\Client\Tasks\Api\EasMessagesApi(null, $this->getTasksApiConfig());
+			$api = new \WT\Client\Tasks\Api\EasApi(null, $this->getTasksApiConfig());
 			$logger->debug('[REST] --> getMessage({}, {})', [$foId, $id]);
 			$item = $api->getMessage($foId, $id);
 			if ($logger->isDebugEnabled()) $logger->debug('[REST] ...'.PHP_EOL.'{}', [$item]);
@@ -108,7 +108,7 @@ class BackendTasks extends AbstractWebTopBackendDiff {
 			}
 			
 			$body = $this->toApiSyncTaskUpdate($message);
-			$api = new \WT\Client\Tasks\Api\EasMessagesApi(null, $this->getTasksApiConfig());
+			$api = new \WT\Client\Tasks\Api\EasApi(null, $this->getTasksApiConfig());
 			if (empty($id)) {
 				$logger->debug('[REST] --> addMessage({})', [$foId]);
 				$stat = $api->addMessage($foId, $body);
@@ -149,7 +149,7 @@ class BackendTasks extends AbstractWebTopBackendDiff {
 				return false;
 			}
 			
-			$api = new \WT\Client\Tasks\Api\EasMessagesApi(null, $this->getTasksApiConfig());
+			$api = new \WT\Client\Tasks\Api\EasApi(null, $this->getTasksApiConfig());
 			$logger->debug('[REST] --> deleteMessage({}, {})', [$foId, $id]);
 			$api->deleteMessage($foId, $id);
 			$this->updateApiSyncFolderMessage($foId, $id, null); // Update cached stat info!

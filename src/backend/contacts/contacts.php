@@ -82,7 +82,7 @@ class BackendContacts extends AbstractWebTopBackendDiff {
 		$logger = $this->getLogger();
 		
 		try {
-			$api = new \WT\Client\Contacts\Api\EasFoldersApi(null, $this->getContactsApiConfig());
+			$api = new \WT\Client\Contacts\Api\EasApi(null, $this->getContactsApiConfig());
 			$logger->debug('[REST] --> getFolders()');
 			$items = $api->getFolders();
 			$map = [];
@@ -102,7 +102,7 @@ class BackendContacts extends AbstractWebTopBackendDiff {
 		$logger = $this->getLogger();
 		
 		try {
-			$api = new \WT\Client\Contacts\Api\EasMessagesApi(null, $this->getContactsApiConfig());
+			$api = new \WT\Client\Contacts\Api\EasApi(null, $this->getContactsApiConfig());
 			$logger->debug('[REST] --> getMessagesStats({})', [$folderId]);
 			$items = $api->getMessagesStats($folderId);
 			$map = [];
@@ -126,7 +126,7 @@ class BackendContacts extends AbstractWebTopBackendDiff {
 		$truncsize = Utils::GetTruncSize($contentparameters->GetTruncation());
 		
 		try {
-			$api = new \WT\Client\Contacts\Api\EasMessagesApi(null, $this->getContactsApiConfig());
+			$api = new \WT\Client\Contacts\Api\EasApi(null, $this->getContactsApiConfig());
 			$logger->debug('[REST] --> getMessage({}, {})', [$foId, $id]);
 			$item = $api->getMessage($foId, $id);
 			if ($logger->isDebugEnabled()) $logger->debug('[REST] ...'.PHP_EOL.'{}', [$item]);
@@ -160,7 +160,7 @@ class BackendContacts extends AbstractWebTopBackendDiff {
 			}
 			
 			$body = $this->toApiSyncContactUpdate($message);
-			$api = new \WT\Client\Contacts\Api\EasMessagesApi(null, $this->getContactsApiConfig());
+			$api = new \WT\Client\Contacts\Api\EasApi(null, $this->getContactsApiConfig());
 			if (empty($id)) {
 				$logger->debug('[REST] --> addMessage({})', [$foId]);
 				$stat = $api->addMessage($foId, $body);
@@ -201,7 +201,7 @@ class BackendContacts extends AbstractWebTopBackendDiff {
 				return false;
 			}
 			
-			$api = new \WT\Client\Contacts\Api\EasMessagesApi(null, $this->getContactsApiConfig());
+			$api = new \WT\Client\Contacts\Api\EasApi(null, $this->getContactsApiConfig());
 			$logger->debug('[REST] --> deleteMessage({}, {})', [$foId, $id]);
 			$api->deleteMessage($foId, $id);
 			$this->updateApiSyncFolderMessage($foId, $id, null); // Update cached stat info!

@@ -28,7 +28,7 @@ class BackendCalendar extends AbstractWebTopBackendDiff {
 		$logger = $this->getLogger();
 		
 		try {
-			$api = new \WT\Client\Calendar\Api\EasFoldersApi(null, $this->getCalendarApiConfig());
+			$api = new \WT\Client\Calendar\Api\EasApi(null, $this->getCalendarApiConfig());
 			$logger->debug('[REST] --> getFolders()');
 			$items = $api->getFolders();
 			$map = [];
@@ -48,7 +48,7 @@ class BackendCalendar extends AbstractWebTopBackendDiff {
 		$logger = $this->getLogger();
 		
 		try {
-			$api = new \WT\Client\Calendar\Api\EasMessagesApi(null, $this->getCalendarApiConfig());
+			$api = new \WT\Client\Calendar\Api\EasApi(null, $this->getCalendarApiConfig());
 			$logger->debug('[REST] --> getMessagesStats({})', [$folderId]);
 			$items = $api->getMessagesStats($folderId, $isoCutoffDate);
 			$map = [];
@@ -74,7 +74,7 @@ class BackendCalendar extends AbstractWebTopBackendDiff {
 		//$bodypreference = $contentparameters->GetBodyPreference(); /* fmbiete's contribution r1528, ZP-320 */
 		
 		try {
-			$api = new \WT\Client\Calendar\Api\EasMessagesApi(null, $this->getCalendarApiConfig());
+			$api = new \WT\Client\Calendar\Api\EasApi(null, $this->getCalendarApiConfig());
 			$logger->debug('[REST] --> getMessage({}, {})', [$foId, $id]);
 			$item = $api->getMessage($foId, $id);
 			if ($logger->isDebugEnabled()) $logger->debug('[REST] ...'.PHP_EOL.'{}', [$item]);
@@ -107,7 +107,7 @@ class BackendCalendar extends AbstractWebTopBackendDiff {
 				return false;
 			}
 			
-			$api = new \WT\Client\Calendar\Api\EasMessagesApi(null, $this->getCalendarApiConfig());
+			$api = new \WT\Client\Calendar\Api\EasApi(null, $this->getCalendarApiConfig());
 			if (empty($id)) {
 				$body = $this->toApiSyncEventUpdate($this->toApiSyncEventData($message)); // New messages do not have event (broken) exceptions
 				$logger->debug('[REST] --> addMessage({})', [$foId]);
@@ -164,7 +164,7 @@ class BackendCalendar extends AbstractWebTopBackendDiff {
 				return false;
 			}
 			
-			$api = new \WT\Client\Calendar\Api\EasMessagesApi(null, $this->getCalendarApiConfig());
+			$api = new \WT\Client\Calendar\Api\EasApi(null, $this->getCalendarApiConfig());
 			$logger->debug('[REST] --> deleteMessage({}, {})', [$foId, $id]);
 			$api->deleteMessage($foId, $id);
 			$this->updateApiSyncFolderMessage($foId, $id, null); // Update cached stat info!
