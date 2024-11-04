@@ -30,11 +30,11 @@ class Config extends AbstractConfig {
 		'mail.imapServer' => 'localhost',
 		'mail.imapPort' => 143,
 		'calendar.enabled' => true,
-		'calendar.apiUrlPath' => '/api/com.sonicle.webtop.calendar/v1',
+		'calendar.apiUrlPath' => '/api/com.sonicle.webtop.calendar/v2',
 		'contacts.enabled' => true,
-		'contacts.apiUrlPath' => '/api/com.sonicle.webtop.contacts/v1',
+		'contacts.apiUrlPath' => '/api/com.sonicle.webtop.contacts/v2',
 		'tasks.enabled' => true,
-		'tasks.apiUrlPath' => '/api/com.sonicle.webtop.tasks/v1'
+		'tasks.apiUrlPath' => '/api/com.sonicle.webtop.tasks/v2'
 	];
 	
 	protected function __construct($file) {

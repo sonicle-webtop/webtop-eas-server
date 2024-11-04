@@ -5,6 +5,9 @@
 This package adds EAS capabilities to WebTop platform allowing synchronization with ActiveSync compatible devices such as mobile phones, tablets and Outlook 2013 and above.
 You can find an indicative compatibility table [here](https://wiki.z-hub.io/display/ZP/Compatibility).
 
+ &#9888; Version `2.4.5.22` requires different RestAPI enpoint versions for some services.
+Make sure to have at least WebTop release **wt-5.27.0** (pay attention to updated services versions below).
+
  &#9888; Version `2.4.5.20` has its own logging module, instead of rely on ZPush internal implementation. So, from this version onward, no dedicated "errors log" (`server_error.log`) file will be produced anymore.
 
 ## Requirements
@@ -14,7 +17,7 @@ Then, summing:
 
 * PHP >= 5.5.X (with php-imap and php-mbstring extensions installed)
 * Apache with mod_php
-* WebTop instance supporting EAS REST API (core >= v.5.6.0, calendar >= v.5.6.0, contacts >= v.5.6.0, tasks >= v.5.3.0)
+* WebTop instance supporting EAS REST API (core >= v.5.6.0, calendar >= v.5.21.0, contacts >= v.5.18.0, tasks >= v.5.15.0)
 
 ## Installation
 

@@ -167,7 +167,7 @@ class BackendTasks extends AbstractWebTopBackendDiff {
 	}
 	
 	protected function toZPStatFolder($item) { // Due to inheritance, we need to omit param type!
-	//protected function toZPStatFolder(\WT\Client\Tasks\Model\SyncFolder $item) {
+	//protected function toZPStatFolder(\WT\Client\Tasks\Model\EasSyncFolder $item) {
 		return $this->createZPStatFolder(
 			$this->encodeFolderId(strval($item->getId())),
 			'0',
@@ -176,7 +176,7 @@ class BackendTasks extends AbstractWebTopBackendDiff {
 	}
 	
 	protected function toZPSyncFolder($item) { // Due to inheritance, we need to omit param type!
-	//protected function toZPSyncFolder(\WT\Client\Tasks\Model\SyncFolder $item) {
+	//protected function toZPSyncFolder(\WT\Client\Tasks\Model\EasSyncFolder $item) {
 		$obj = new SyncFolder();
 		$obj->serverid = $this->encodeFolderId(strval($item->getId()));
 		$obj->parentid = '0';
@@ -186,7 +186,7 @@ class BackendTasks extends AbstractWebTopBackendDiff {
 		return $obj;
 	}
 	
-	protected function toZPStatMessage(\WT\Client\Tasks\Model\SyncTaskStat $item) {
+	protected function toZPStatMessage(\WT\Client\Tasks\Model\EasSyncTaskStat $item) {
 		$obj = [
 			'id' => strval($item->getId()),
 			'mod' => $item->getEtag(),
@@ -195,7 +195,7 @@ class BackendTasks extends AbstractWebTopBackendDiff {
 		return $obj;
 	}
 	
-	protected function toZPSyncTask(\WT\Client\Tasks\Model\SyncTask $item, $bodyMaxSize = -1) {
+	protected function toZPSyncTask(\WT\Client\Tasks\Model\EasSyncTask $item, $bodyMaxSize = -1) {
 		$obj = new SyncTask();
 		
 		$obj->subject = $item->getSubject();
@@ -227,7 +227,7 @@ class BackendTasks extends AbstractWebTopBackendDiff {
 	}
 	
 	protected function toApiSyncTaskUpdate(SyncTask $sync) {
-		$obj = new \WT\Client\Tasks\Model\SyncTaskUpdate();
+		$obj = new \WT\Client\Tasks\Model\EasSyncTaskUpdate();
 		$logger = $this->getLogger();
 		
 		if (isset($sync->subject)) {

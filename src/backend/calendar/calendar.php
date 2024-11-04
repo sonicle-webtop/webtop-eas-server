@@ -182,18 +182,18 @@ class BackendCalendar extends AbstractWebTopBackendDiff {
 	}
 	
 	protected function toZPStatFolder($item) { // Due to inheritance, we need to omit param type!
-	//protected function toZPStatFolder(\WT\Client\Calendar\Model\SyncFolder $item) {
+	//protected function toZPStatFolder(\WT\Client\Calendar\Model\EasSyncFolder $item) {
 		return $this->createZPStatFolder(
-			$this->encodeFolderId(strval($item->getId())),
+			$this->encodeFolderId($item->getId()),
 			'0',
 			$item->getDisplayName()
 		);
 	}
 	
 	protected function toZPSyncFolder($item) { // Due to inheritance, we need to omit param type!
-	//protected function toZPSyncFolder(\WT\Client\Calendar\Model\SyncFolder $item) {
+	//protected function toZPSyncFolder(\WT\Client\Calendar\Model\EasSyncFolder $item) {
 		$obj = new SyncFolder();
-		$obj->serverid = $this->encodeFolderId(strval($item->getId()));
+		$obj->serverid = $this->encodeFolderId($item->getId());
 		$obj->parentid = '0';
 		//$obj->parentid = $item->getOwnerUsername();
 		$obj->displayname = $item->getDisplayName();
@@ -201,16 +201,16 @@ class BackendCalendar extends AbstractWebTopBackendDiff {
 		return $obj;
 	}
 	
-	protected function toZPStatMessage(\WT\Client\Calendar\Model\SyncEventStat $item) {
+	protected function toZPStatMessage(\WT\Client\Calendar\Model\EasSyncEventStat $item) {
 		$obj = [
-			'id' => strval($item->getId()),
+			'id' => $item->getId(),
 			'mod' => $item->getEtag(),
 			'flags' => 1
 		];
 		return $obj;
 	}
 	
-	protected function toZPSyncAppointment(\WT\Client\Calendar\Model\SyncEvent $item, $bodyMaxSize = -1) {
+	protected function toZPSyncAppointment(\WT\Client\Calendar\Model\EasSyncEvent $item, $bodyMaxSize = -1) {
 		$logger = $this->getLogger();
 		$obj = new SyncAppointment();
 		
@@ -306,7 +306,7 @@ class BackendCalendar extends AbstractWebTopBackendDiff {
 		return $obj;
 	}
 	
-	protected function toZPSyncAttendee(\WT\Client\Calendar\Model\SyncEventDataAttendee $item) {
+	protected function toZPSyncAttendee(\WT\Client\Calendar\Model\EasSyncEventDataAttendee $item) {
 		$obj = new SyncAttendee();
 		
 		$ia = ZPUtil::parseInternetAddress($item->getAddress());
@@ -320,8 +320,8 @@ class BackendCalendar extends AbstractWebTopBackendDiff {
 		return $obj;
 	}
 	
-	protected function toApiSyncEventUpdate(\WT\Client\Calendar\Model\SyncEventData $data, $exceptions = null) {
-		$obj = new \WT\Client\Calendar\Model\SyncEventUpdate();
+	protected function toApiSyncEventUpdate(\WT\Client\Calendar\Model\EasSyncEventData $data, $exceptions = null) {
+		$obj = new \WT\Client\Calendar\Model\EasSyncEventUpdate();
 		
 		$obj->setData($data);
 		$obj->setExceptions($exceptions);
@@ -332,7 +332,7 @@ class BackendCalendar extends AbstractWebTopBackendDiff {
 	protected function toApiSyncEventData(SyncAppointment $sync) {
 		$logger = $this->getLogger();
 		
-		$obj = new \WT\Client\Calendar\Model\SyncEventData();
+		$obj = new \WT\Client\Calendar\Model\EasSyncEventData();
 		
 		if (isset($sync->timezone)) {
 			$obj->setTz(ZPUtil::tzBlobToTZName($sync->timezone, $this->getUserTZName()));
@@ -452,7 +452,7 @@ class BackendCalendar extends AbstractWebTopBackendDiff {
 	
 	protected function toApiSyncEventDataAttendee(SyncAttendee $sync) {
 		$logger = $this->getLogger();
-		$obj = new \WT\Client\Calendar\Model\SyncEventDataAttendee();
+		$obj = new \WT\Client\Calendar\Model\EasSyncEventDataAttendee();
 		
 		if (isset($sync->email)) {
 			$logger->debug("email: [{}]", [$sync->email]);

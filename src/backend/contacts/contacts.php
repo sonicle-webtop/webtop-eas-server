@@ -219,18 +219,18 @@ class BackendContacts extends AbstractWebTopBackendDiff {
 	}
 	
 	protected function toZPStatFolder($item) { // Due to inheritance, we need to omit param type!
-	//protected function toZPStatFolder(\WT\Client\Contacts\Model\SyncFolder $item) {
+	//protected function toZPStatFolder(\WT\Client\Contacts\Model\EasSyncFolder $item) {
 		return $this->createZPStatFolder(
-			$this->encodeFolderId(strval($item->getId())),
+			$this->encodeFolderId($item->getId()),
 			'0',
 			$item->getDisplayName()
 		);
 	}
 	
 	protected function toZPSyncFolder($item) { // Due to inheritance, we need to omit param type!
-	//protected function toZPSyncFolder(\WT\Client\Contacts\Model\SyncFolder $item) {
+	//protected function toZPSyncFolder(\WT\Client\Contacts\Model\EasSyncFolder $item) {
 		$obj = new SyncFolder();
-		$obj->serverid = $this->encodeFolderId(strval($item->getId()));
+		$obj->serverid = $this->encodeFolderId($item->getId());
 		$obj->parentid = '0';
 		//$obj->parentid = $item->getOwnerUsername();
 		$obj->displayname = $item->getDisplayName();
@@ -238,16 +238,16 @@ class BackendContacts extends AbstractWebTopBackendDiff {
 		return $obj;
 	}
 	
-	protected function toZPStatMessage(\WT\Client\Contacts\Model\SyncContactStat $item) {
+	protected function toZPStatMessage(\WT\Client\Contacts\Model\EasSyncContactStat $item) {
 		$obj = [
-			'id' => strval($item->getId()),
+			'id' => $item->getId(),
 			'mod' => $item->getEtag(),
 			'flags' => 1
 		];
 		return $obj;
 	}
 	
-	protected function toZPSyncContact(\WT\Client\Contacts\Model\SyncContact $item, $bodyMaxSize = -1) {
+	protected function toZPSyncContact(\WT\Client\Contacts\Model\EasSyncContact $item, $bodyMaxSize = -1) {
 		$logger = $this->getLogger();
 		$obj = new SyncContact();
 		
@@ -298,7 +298,7 @@ class BackendContacts extends AbstractWebTopBackendDiff {
 	
 	protected function toApiSyncContactUpdate(SyncContact $item) {
 		$logger = $this->getLogger();
-		$obj = new \WT\Client\Contacts\Model\SyncContactUpdate();
+		$obj = new \WT\Client\Contacts\Model\EasSyncContactUpdate();
 		
 		foreach (self::$MESSAGE_MAPPINGS as $zpName => $wtName) {
 			switch ($wtName) {
