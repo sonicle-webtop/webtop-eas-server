@@ -163,11 +163,11 @@ class BackendContacts extends AbstractWebTopBackendDiff {
 			$api = new \WT\Client\Contacts\Api\EasApi(null, $this->getContactsApiConfig());
 			if (empty($id)) {
 				$logger->debug('[REST] --> addMessage({})', [$foId]);
-				$stat = $api->addMessage($foId, $body);
+				$stat = $api->addMessage($body, $foId);
 				
 			} else {
 				$logger->debug('[REST] --> updateMessage({}, {})', [$foId, $id]);
-				$stat = $api->updateMessage($foId, $id, $body);
+				$stat = $api->updateMessage($body, $foId, $id);
 			}
 			if ($logger->isDebugEnabled()) $logger->debug('[REST] ...'.PHP_EOL.'{}', [$stat]);
 			$this->updateApiSyncFolderMessage($foId, $id, $stat); // Update cached stat info!

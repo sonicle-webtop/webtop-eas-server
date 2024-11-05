@@ -111,7 +111,7 @@ class BackendCalendar extends AbstractWebTopBackendDiff {
 			if (empty($id)) {
 				$body = $this->toApiSyncEventUpdate($this->toApiSyncEventData($message)); // New messages do not have event (broken) exceptions
 				$logger->debug('[REST] --> addMessage({})', [$foId]);
-				$stat = $api->addMessage($foId, $body);
+				$stat = $api->addMessage($body, $foId);
 				if ($logger->isDebugEnabled()) $logger->debug('[REST] ...'.PHP_EOL.'{}', [$stat]);
 				$this->updateApiSyncFolderMessage($foId, $id, $stat); // Update cached stat info!
 				
@@ -121,7 +121,7 @@ class BackendCalendar extends AbstractWebTopBackendDiff {
 				$exceptions = $this->toApiSyncEventDataExceptions($message);
 				$body = $this->toApiSyncEventUpdate($this->toApiSyncEventData($message), $exceptions);
 				$logger->debug('[REST] --> updateMessage({}, {})', [$foId, $id]);
-				$stats = $api->updateMessage($foId, $id, $body);
+				$stats = $api->updateMessage($body, $foId, $id);
 				for ($i = 0; $i < count($stats); $i++) {
 					if ($logger->isDebugEnabled()) $logger->debug('[REST] ... [{}]'.PHP_EOL.'{}', [$i, $stats[$i]]);
 					$this->updateApiSyncFolderMessage($foId, $stats[$i]->getId(), $stats[$i]); // Update cached stat info!
