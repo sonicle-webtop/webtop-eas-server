@@ -73,7 +73,7 @@ class EasApi
         Configuration $config = null,
         HeaderSelector $selector = null
     ) {
-        $this->client = $client ?: new Client(['verify' => false]);
+        $this->client = $client ?: new Client();
         $this->config = $config ?: new Configuration();
         $this->headerSelector = $selector ?: new HeaderSelector();
     }
@@ -94,7 +94,7 @@ class EasApi
      * @param  \WT\Client\Contacts\Model\EasSyncContactUpdate $body body (required)
      * @param  string $folderId folderId (required)
      *
-     * @throws {{invokerPackage}}\ApiException on non-2xx response
+     * @throws \WT\Client\Contacts\ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return \WT\Client\Contacts\Model\EasSyncContactStat
      */
@@ -112,7 +112,7 @@ class EasApi
      * @param  \WT\Client\Contacts\Model\EasSyncContactUpdate $body (required)
      * @param  string $folderId (required)
      *
-     * @throws {{invokerPackage}}\ApiException on non-2xx response
+     * @throws \WT\Client\Contacts\ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return array of \WT\Client\Contacts\Model\EasSyncContactStat, HTTP status code, HTTP response headers (array of strings)
      */
@@ -154,7 +154,7 @@ class EasApi
                 $content = $responseBody; //stream goes to serializer
             } else {
                 $content = $responseBody->getContents();
-                if ($returnType !== 'string') {
+                if (!in_array($returnType, ['string','integer','bool'])) {
                     $content = json_decode($content);
                 }
             }
@@ -337,7 +337,7 @@ class EasApi
 
             } else {
                 // for HTTP post (form)
-                $httpBody = \GuzzleHttp\Psr7\build_query($formParams);
+                $httpBody = \GuzzleHttp\Psr7\Query::build($formParams);
             }
         }
 
@@ -345,10 +345,12 @@ class EasApi
         if ($this->config->getUsername() !== null || $this->config->getPassword() !== null) {
             $headers['Authorization'] = 'Basic ' . base64_encode($this->config->getUsername() . ":" . $this->config->getPassword());
         }
+        // this endpoint requires Bearer token
+        if ($this->config->getAccessToken() !== null) {
+            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
+        }
 
-        // PULL REQUEST -->
         $defaultHeaders = $this->config->getDefaultHeaders();
-        // <-- PULL REQUEST
         if ($this->config->getUserAgent()) {
             $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
         }
@@ -359,7 +361,7 @@ class EasApi
             $headers
         );
 
-        $query = \GuzzleHttp\Psr7\build_query($queryParams);
+        $query = \GuzzleHttp\Psr7\Query::build($queryParams);
         return new Request(
             'POST',
             $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
@@ -376,7 +378,7 @@ class EasApi
      * @param  string $folderId Folder ID (required)
      * @param  string $id Message ID (required)
      *
-     * @throws {{invokerPackage}}\ApiException on non-2xx response
+     * @throws \WT\Client\Contacts\ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return void
      */
@@ -393,7 +395,7 @@ class EasApi
      * @param  string $folderId Folder ID (required)
      * @param  string $id Message ID (required)
      *
-     * @throws {{invokerPackage}}\ApiException on non-2xx response
+     * @throws \WT\Client\Contacts\ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return array of null, HTTP status code, HTTP response headers (array of strings)
      */
@@ -587,7 +589,7 @@ class EasApi
 
             } else {
                 // for HTTP post (form)
-                $httpBody = \GuzzleHttp\Psr7\build_query($formParams);
+                $httpBody = \GuzzleHttp\Psr7\Query::build($formParams);
             }
         }
 
@@ -595,10 +597,12 @@ class EasApi
         if ($this->config->getUsername() !== null || $this->config->getPassword() !== null) {
             $headers['Authorization'] = 'Basic ' . base64_encode($this->config->getUsername() . ":" . $this->config->getPassword());
         }
+        // this endpoint requires Bearer token
+        if ($this->config->getAccessToken() !== null) {
+            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
+        }
 
-        // PULL REQUEST -->
         $defaultHeaders = $this->config->getDefaultHeaders();
-        // <-- PULL REQUEST
         if ($this->config->getUserAgent()) {
             $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
         }
@@ -609,7 +613,7 @@ class EasApi
             $headers
         );
 
-        $query = \GuzzleHttp\Psr7\build_query($queryParams);
+        $query = \GuzzleHttp\Psr7\Query::build($queryParams);
         return new Request(
             'DELETE',
             $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
@@ -624,7 +628,7 @@ class EasApi
      * List all folders
      *
      *
-     * @throws {{invokerPackage}}\ApiException on non-2xx response
+     * @throws \WT\Client\Contacts\ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return \WT\Client\Contacts\Model\EasSyncFolder[]
      */
@@ -640,7 +644,7 @@ class EasApi
      * List all folders
      *
      *
-     * @throws {{invokerPackage}}\ApiException on non-2xx response
+     * @throws \WT\Client\Contacts\ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return array of \WT\Client\Contacts\Model\EasSyncFolder[], HTTP status code, HTTP response headers (array of strings)
      */
@@ -682,7 +686,7 @@ class EasApi
                 $content = $responseBody; //stream goes to serializer
             } else {
                 $content = $responseBody->getContents();
-                if ($returnType !== 'string') {
+                if (!in_array($returnType, ['string','integer','bool'])) {
                     $content = json_decode($content);
                 }
             }
@@ -836,7 +840,7 @@ class EasApi
 
             } else {
                 // for HTTP post (form)
-                $httpBody = \GuzzleHttp\Psr7\build_query($formParams);
+                $httpBody = \GuzzleHttp\Psr7\Query::build($formParams);
             }
         }
 
@@ -844,10 +848,12 @@ class EasApi
         if ($this->config->getUsername() !== null || $this->config->getPassword() !== null) {
             $headers['Authorization'] = 'Basic ' . base64_encode($this->config->getUsername() . ":" . $this->config->getPassword());
         }
+        // this endpoint requires Bearer token
+        if ($this->config->getAccessToken() !== null) {
+            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
+        }
 
-        // PULL REQUEST -->
         $defaultHeaders = $this->config->getDefaultHeaders();
-        // <-- PULL REQUEST
         if ($this->config->getUserAgent()) {
             $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
         }
@@ -858,7 +864,7 @@ class EasApi
             $headers
         );
 
-        $query = \GuzzleHttp\Psr7\build_query($queryParams);
+        $query = \GuzzleHttp\Psr7\Query::build($queryParams);
         return new Request(
             'GET',
             $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
@@ -876,7 +882,7 @@ class EasApi
      * @param  string $id Message ID (required)
      * @param  bool $picture Determine whether to return picture data (optional)
      *
-     * @throws {{invokerPackage}}\ApiException on non-2xx response
+     * @throws \WT\Client\Contacts\ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return \WT\Client\Contacts\Model\EasSyncContact
      */
@@ -895,7 +901,7 @@ class EasApi
      * @param  string $id Message ID (required)
      * @param  bool $picture Determine whether to return picture data (optional)
      *
-     * @throws {{invokerPackage}}\ApiException on non-2xx response
+     * @throws \WT\Client\Contacts\ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return array of \WT\Client\Contacts\Model\EasSyncContact, HTTP status code, HTTP response headers (array of strings)
      */
@@ -937,7 +943,7 @@ class EasApi
                 $content = $responseBody; //stream goes to serializer
             } else {
                 $content = $responseBody->getContents();
-                if ($returnType !== 'string') {
+                if (!in_array($returnType, ['string','integer','bool'])) {
                     $content = json_decode($content);
                 }
             }
@@ -1073,9 +1079,13 @@ class EasApi
 
         // query params
         if ($picture !== null) {
-            $queryParams['picture'] = ObjectSerializer::toQueryValue($picture);
-        }
-        // <-- PULL REQUEST
+			// if still an array simply assign it to queryParams
+            if (is_array($picture)) {
+				$queryParams['picture'] = $picture;
+			} else {
+				$queryParams['picture'] = ObjectSerializer::toQueryValue($picture, null);
+			}		
+		}
 
         // path params
         if ($folderId !== null) {
@@ -1133,7 +1143,7 @@ class EasApi
 
             } else {
                 // for HTTP post (form)
-                $httpBody = \GuzzleHttp\Psr7\build_query($formParams);
+                $httpBody = \GuzzleHttp\Psr7\Query::build($formParams);
             }
         }
 
@@ -1141,10 +1151,12 @@ class EasApi
         if ($this->config->getUsername() !== null || $this->config->getPassword() !== null) {
             $headers['Authorization'] = 'Basic ' . base64_encode($this->config->getUsername() . ":" . $this->config->getPassword());
         }
+        // this endpoint requires Bearer token
+        if ($this->config->getAccessToken() !== null) {
+            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
+        }
 
-        // PULL REQUEST -->
         $defaultHeaders = $this->config->getDefaultHeaders();
-        // <-- PULL REQUEST
         if ($this->config->getUserAgent()) {
             $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
         }
@@ -1155,7 +1167,7 @@ class EasApi
             $headers
         );
 
-        $query = \GuzzleHttp\Psr7\build_query($queryParams);
+        $query = \GuzzleHttp\Psr7\Query::build($queryParams);
         return new Request(
             'GET',
             $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
@@ -1171,7 +1183,7 @@ class EasApi
      *
      * @param  string $folderId folderId (required)
      *
-     * @throws {{invokerPackage}}\ApiException on non-2xx response
+     * @throws \WT\Client\Contacts\ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return \WT\Client\Contacts\Model\EasSyncContactStat[]
      */
@@ -1188,7 +1200,7 @@ class EasApi
      *
      * @param  string $folderId (required)
      *
-     * @throws {{invokerPackage}}\ApiException on non-2xx response
+     * @throws \WT\Client\Contacts\ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return array of \WT\Client\Contacts\Model\EasSyncContactStat[], HTTP status code, HTTP response headers (array of strings)
      */
@@ -1230,7 +1242,7 @@ class EasApi
                 $content = $responseBody; //stream goes to serializer
             } else {
                 $content = $responseBody->getContents();
-                if ($returnType !== 'string') {
+                if (!in_array($returnType, ['string','integer','bool'])) {
                     $content = json_decode($content);
                 }
             }
@@ -1401,7 +1413,7 @@ class EasApi
 
             } else {
                 // for HTTP post (form)
-                $httpBody = \GuzzleHttp\Psr7\build_query($formParams);
+                $httpBody = \GuzzleHttp\Psr7\Query::build($formParams);
             }
         }
 
@@ -1409,10 +1421,12 @@ class EasApi
         if ($this->config->getUsername() !== null || $this->config->getPassword() !== null) {
             $headers['Authorization'] = 'Basic ' . base64_encode($this->config->getUsername() . ":" . $this->config->getPassword());
         }
+        // this endpoint requires Bearer token
+        if ($this->config->getAccessToken() !== null) {
+            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
+        }
 
-        // PULL REQUEST -->
         $defaultHeaders = $this->config->getDefaultHeaders();
-        // <-- PULL REQUEST
         if ($this->config->getUserAgent()) {
             $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
         }
@@ -1423,7 +1437,7 @@ class EasApi
             $headers
         );
 
-        $query = \GuzzleHttp\Psr7\build_query($queryParams);
+        $query = \GuzzleHttp\Psr7\Query::build($queryParams);
         return new Request(
             'GET',
             $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
@@ -1442,7 +1456,7 @@ class EasApi
      * @param  string $id Message ID (required)
      * @param  bool $picture Determine whether to update picture data (optional)
      *
-     * @throws {{invokerPackage}}\ApiException on non-2xx response
+     * @throws \WT\Client\Contacts\ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return \WT\Client\Contacts\Model\EasSyncContactStat
      */
@@ -1462,7 +1476,7 @@ class EasApi
      * @param  string $id Message ID (required)
      * @param  bool $picture Determine whether to update picture data (optional)
      *
-     * @throws {{invokerPackage}}\ApiException on non-2xx response
+     * @throws \WT\Client\Contacts\ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return array of \WT\Client\Contacts\Model\EasSyncContactStat, HTTP status code, HTTP response headers (array of strings)
      */
@@ -1504,7 +1518,7 @@ class EasApi
                 $content = $responseBody; //stream goes to serializer
             } else {
                 $content = $responseBody->getContents();
-                if ($returnType !== 'string') {
+                if (!in_array($returnType, ['string','integer','bool'])) {
                     $content = json_decode($content);
                 }
             }
@@ -1649,9 +1663,13 @@ class EasApi
 
         // query params
         if ($picture !== null) {
-            $queryParams['picture'] = ObjectSerializer::toQueryValue($picture);
-        }
-        // <-- PULL REQUEST
+			// if still an array simply assign it to queryParams
+            if (is_array($picture)) {
+				$queryParams['picture'] = $picture;
+			} else {
+				$queryParams['picture'] = ObjectSerializer::toQueryValue($picture, null);
+			}		
+		}
 
         // path params
         if ($folderId !== null) {
@@ -1712,7 +1730,7 @@ class EasApi
 
             } else {
                 // for HTTP post (form)
-                $httpBody = \GuzzleHttp\Psr7\build_query($formParams);
+                $httpBody = \GuzzleHttp\Psr7\Query::build($formParams);
             }
         }
 
@@ -1720,10 +1738,12 @@ class EasApi
         if ($this->config->getUsername() !== null || $this->config->getPassword() !== null) {
             $headers['Authorization'] = 'Basic ' . base64_encode($this->config->getUsername() . ":" . $this->config->getPassword());
         }
+        // this endpoint requires Bearer token
+        if ($this->config->getAccessToken() !== null) {
+            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
+        }
 
-        // PULL REQUEST -->
         $defaultHeaders = $this->config->getDefaultHeaders();
-        // <-- PULL REQUEST
         if ($this->config->getUserAgent()) {
             $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
         }
@@ -1734,7 +1754,7 @@ class EasApi
             $headers
         );
 
-        $query = \GuzzleHttp\Psr7\build_query($queryParams);
+        $query = \GuzzleHttp\Psr7\Query::build($queryParams);
         return new Request(
             'PUT',
             $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),

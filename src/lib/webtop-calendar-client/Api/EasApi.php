@@ -73,7 +73,7 @@ class EasApi
         Configuration $config = null,
         HeaderSelector $selector = null
     ) {
-        $this->client = $client ?: new Client(['verify' => false]);
+        $this->client = $client ?: new Client();
         $this->config = $config ?: new Configuration();
         $this->headerSelector = $selector ?: new HeaderSelector();
     }
@@ -94,7 +94,7 @@ class EasApi
      * @param  \WT\Client\Calendar\Model\EasSyncEventUpdate $body body (required)
      * @param  string $folderId Folder ID (required)
      *
-     * @throws {{invokerPackage}}\ApiException on non-2xx response
+     * @throws \WT\Client\Calendar\ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return \WT\Client\Calendar\Model\EasSyncEventStat
      */
@@ -112,7 +112,7 @@ class EasApi
      * @param  \WT\Client\Calendar\Model\EasSyncEventUpdate $body (required)
      * @param  string $folderId Folder ID (required)
      *
-     * @throws {{invokerPackage}}\ApiException on non-2xx response
+     * @throws \WT\Client\Calendar\ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return array of \WT\Client\Calendar\Model\EasSyncEventStat, HTTP status code, HTTP response headers (array of strings)
      */
@@ -154,7 +154,7 @@ class EasApi
                 $content = $responseBody; //stream goes to serializer
             } else {
                 $content = $responseBody->getContents();
-                if ($returnType !== 'string') {
+                if (!in_array($returnType, ['string','integer','bool'])) {
                     $content = json_decode($content);
                 }
             }
@@ -337,7 +337,7 @@ class EasApi
 
             } else {
                 // for HTTP post (form)
-                $httpBody = \GuzzleHttp\Psr7\build_query($formParams);
+                $httpBody = \GuzzleHttp\Psr7\Query::build($formParams);
             }
         }
 
@@ -345,10 +345,12 @@ class EasApi
         if ($this->config->getUsername() !== null || $this->config->getPassword() !== null) {
             $headers['Authorization'] = 'Basic ' . base64_encode($this->config->getUsername() . ":" . $this->config->getPassword());
         }
+        // this endpoint requires Bearer token
+        if ($this->config->getAccessToken() !== null) {
+            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
+        }
 
-        // PULL REQUEST -->
         $defaultHeaders = $this->config->getDefaultHeaders();
-        // <-- PULL REQUEST
         if ($this->config->getUserAgent()) {
             $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
         }
@@ -359,7 +361,7 @@ class EasApi
             $headers
         );
 
-        $query = \GuzzleHttp\Psr7\build_query($queryParams);
+        $query = \GuzzleHttp\Psr7\Query::build($queryParams);
         return new Request(
             'POST',
             $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
@@ -376,7 +378,7 @@ class EasApi
      * @param  string $folderId Folder ID (required)
      * @param  string $id Message ID (required)
      *
-     * @throws {{invokerPackage}}\ApiException on non-2xx response
+     * @throws \WT\Client\Calendar\ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return void
      */
@@ -393,7 +395,7 @@ class EasApi
      * @param  string $folderId Folder ID (required)
      * @param  string $id Message ID (required)
      *
-     * @throws {{invokerPackage}}\ApiException on non-2xx response
+     * @throws \WT\Client\Calendar\ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return array of null, HTTP status code, HTTP response headers (array of strings)
      */
@@ -587,7 +589,7 @@ class EasApi
 
             } else {
                 // for HTTP post (form)
-                $httpBody = \GuzzleHttp\Psr7\build_query($formParams);
+                $httpBody = \GuzzleHttp\Psr7\Query::build($formParams);
             }
         }
 
@@ -595,10 +597,12 @@ class EasApi
         if ($this->config->getUsername() !== null || $this->config->getPassword() !== null) {
             $headers['Authorization'] = 'Basic ' . base64_encode($this->config->getUsername() . ":" . $this->config->getPassword());
         }
+        // this endpoint requires Bearer token
+        if ($this->config->getAccessToken() !== null) {
+            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
+        }
 
-        // PULL REQUEST -->
         $defaultHeaders = $this->config->getDefaultHeaders();
-        // <-- PULL REQUEST
         if ($this->config->getUserAgent()) {
             $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
         }
@@ -609,7 +613,7 @@ class EasApi
             $headers
         );
 
-        $query = \GuzzleHttp\Psr7\build_query($queryParams);
+        $query = \GuzzleHttp\Psr7\Query::build($queryParams);
         return new Request(
             'DELETE',
             $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
@@ -624,7 +628,7 @@ class EasApi
      * List all folders
      *
      *
-     * @throws {{invokerPackage}}\ApiException on non-2xx response
+     * @throws \WT\Client\Calendar\ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return \WT\Client\Calendar\Model\EasSyncFolder[]
      */
@@ -640,7 +644,7 @@ class EasApi
      * List all folders
      *
      *
-     * @throws {{invokerPackage}}\ApiException on non-2xx response
+     * @throws \WT\Client\Calendar\ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return array of \WT\Client\Calendar\Model\EasSyncFolder[], HTTP status code, HTTP response headers (array of strings)
      */
@@ -682,7 +686,7 @@ class EasApi
                 $content = $responseBody; //stream goes to serializer
             } else {
                 $content = $responseBody->getContents();
-                if ($returnType !== 'string') {
+                if (!in_array($returnType, ['string','integer','bool'])) {
                     $content = json_decode($content);
                 }
             }
@@ -836,7 +840,7 @@ class EasApi
 
             } else {
                 // for HTTP post (form)
-                $httpBody = \GuzzleHttp\Psr7\build_query($formParams);
+                $httpBody = \GuzzleHttp\Psr7\Query::build($formParams);
             }
         }
 
@@ -844,10 +848,12 @@ class EasApi
         if ($this->config->getUsername() !== null || $this->config->getPassword() !== null) {
             $headers['Authorization'] = 'Basic ' . base64_encode($this->config->getUsername() . ":" . $this->config->getPassword());
         }
+        // this endpoint requires Bearer token
+        if ($this->config->getAccessToken() !== null) {
+            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
+        }
 
-        // PULL REQUEST -->
         $defaultHeaders = $this->config->getDefaultHeaders();
-        // <-- PULL REQUEST
         if ($this->config->getUserAgent()) {
             $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
         }
@@ -858,7 +864,7 @@ class EasApi
             $headers
         );
 
-        $query = \GuzzleHttp\Psr7\build_query($queryParams);
+        $query = \GuzzleHttp\Psr7\Query::build($queryParams);
         return new Request(
             'GET',
             $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
@@ -875,7 +881,7 @@ class EasApi
      * @param  string $folderId Folder ID (required)
      * @param  string $id Message ID (required)
      *
-     * @throws {{invokerPackage}}\ApiException on non-2xx response
+     * @throws \WT\Client\Calendar\ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return \WT\Client\Calendar\Model\EasSyncEvent
      */
@@ -893,7 +899,7 @@ class EasApi
      * @param  string $folderId Folder ID (required)
      * @param  string $id Message ID (required)
      *
-     * @throws {{invokerPackage}}\ApiException on non-2xx response
+     * @throws \WT\Client\Calendar\ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return array of \WT\Client\Calendar\Model\EasSyncEvent, HTTP status code, HTTP response headers (array of strings)
      */
@@ -935,7 +941,7 @@ class EasApi
                 $content = $responseBody; //stream goes to serializer
             } else {
                 $content = $responseBody->getContents();
-                if ($returnType !== 'string') {
+                if (!in_array($returnType, ['string','integer','bool'])) {
                     $content = json_decode($content);
                 }
             }
@@ -1123,7 +1129,7 @@ class EasApi
 
             } else {
                 // for HTTP post (form)
-                $httpBody = \GuzzleHttp\Psr7\build_query($formParams);
+                $httpBody = \GuzzleHttp\Psr7\Query::build($formParams);
             }
         }
 
@@ -1131,10 +1137,12 @@ class EasApi
         if ($this->config->getUsername() !== null || $this->config->getPassword() !== null) {
             $headers['Authorization'] = 'Basic ' . base64_encode($this->config->getUsername() . ":" . $this->config->getPassword());
         }
+        // this endpoint requires Bearer token
+        if ($this->config->getAccessToken() !== null) {
+            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
+        }
 
-        // PULL REQUEST -->
         $defaultHeaders = $this->config->getDefaultHeaders();
-        // <-- PULL REQUEST
         if ($this->config->getUserAgent()) {
             $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
         }
@@ -1145,7 +1153,7 @@ class EasApi
             $headers
         );
 
-        $query = \GuzzleHttp\Psr7\build_query($queryParams);
+        $query = \GuzzleHttp\Psr7\Query::build($queryParams);
         return new Request(
             'GET',
             $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
@@ -1162,7 +1170,7 @@ class EasApi
      * @param  string $folderId Folder ID (required)
      * @param  string $cutoffDate Cut-off date (ISO date/time YYYYMMDD&#x27;T&#x27;HHMMSS&#x27;Z&#x27;) (optional)
      *
-     * @throws {{invokerPackage}}\ApiException on non-2xx response
+     * @throws \WT\Client\Calendar\ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return \WT\Client\Calendar\Model\EasSyncEventStat[]
      */
@@ -1180,7 +1188,7 @@ class EasApi
      * @param  string $folderId Folder ID (required)
      * @param  string $cutoffDate Cut-off date (ISO date/time YYYYMMDD&#x27;T&#x27;HHMMSS&#x27;Z&#x27;) (optional)
      *
-     * @throws {{invokerPackage}}\ApiException on non-2xx response
+     * @throws \WT\Client\Calendar\ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return array of \WT\Client\Calendar\Model\EasSyncEventStat[], HTTP status code, HTTP response headers (array of strings)
      */
@@ -1222,7 +1230,7 @@ class EasApi
                 $content = $responseBody; //stream goes to serializer
             } else {
                 $content = $responseBody->getContents();
-                if ($returnType !== 'string') {
+                if (!in_array($returnType, ['string','integer','bool'])) {
                     $content = json_decode($content);
                 }
             }
@@ -1349,9 +1357,13 @@ class EasApi
 
         // query params
         if ($cutoffDate !== null) {
-            $queryParams['cutoffDate'] = ObjectSerializer::toQueryValue($cutoffDate);
-        }
-        // <-- PULL REQUEST
+			// if still an array simply assign it to queryParams
+            if (is_array($cutoffDate)) {
+				$queryParams['cutoffDate'] = $cutoffDate;
+			} else {
+				$queryParams['cutoffDate'] = ObjectSerializer::toQueryValue($cutoffDate, null);
+			}		
+		}
 
         // path params
         if ($folderId !== null) {
@@ -1401,7 +1413,7 @@ class EasApi
 
             } else {
                 // for HTTP post (form)
-                $httpBody = \GuzzleHttp\Psr7\build_query($formParams);
+                $httpBody = \GuzzleHttp\Psr7\Query::build($formParams);
             }
         }
 
@@ -1409,10 +1421,12 @@ class EasApi
         if ($this->config->getUsername() !== null || $this->config->getPassword() !== null) {
             $headers['Authorization'] = 'Basic ' . base64_encode($this->config->getUsername() . ":" . $this->config->getPassword());
         }
+        // this endpoint requires Bearer token
+        if ($this->config->getAccessToken() !== null) {
+            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
+        }
 
-        // PULL REQUEST -->
         $defaultHeaders = $this->config->getDefaultHeaders();
-        // <-- PULL REQUEST
         if ($this->config->getUserAgent()) {
             $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
         }
@@ -1423,7 +1437,7 @@ class EasApi
             $headers
         );
 
-        $query = \GuzzleHttp\Psr7\build_query($queryParams);
+        $query = \GuzzleHttp\Psr7\Query::build($queryParams);
         return new Request(
             'GET',
             $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
@@ -1441,7 +1455,7 @@ class EasApi
      * @param  string $folderId Folder ID (required)
      * @param  string $id Message ID (required)
      *
-     * @throws {{invokerPackage}}\ApiException on non-2xx response
+     * @throws \WT\Client\Calendar\ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return \WT\Client\Calendar\Model\EasSyncEventStat[]
      */
@@ -1460,7 +1474,7 @@ class EasApi
      * @param  string $folderId Folder ID (required)
      * @param  string $id Message ID (required)
      *
-     * @throws {{invokerPackage}}\ApiException on non-2xx response
+     * @throws \WT\Client\Calendar\ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return array of \WT\Client\Calendar\Model\EasSyncEventStat[], HTTP status code, HTTP response headers (array of strings)
      */
@@ -1502,7 +1516,7 @@ class EasApi
                 $content = $responseBody; //stream goes to serializer
             } else {
                 $content = $responseBody->getContents();
-                if ($returnType !== 'string') {
+                if (!in_array($returnType, ['string','integer','bool'])) {
                     $content = json_decode($content);
                 }
             }
@@ -1702,7 +1716,7 @@ class EasApi
 
             } else {
                 // for HTTP post (form)
-                $httpBody = \GuzzleHttp\Psr7\build_query($formParams);
+                $httpBody = \GuzzleHttp\Psr7\Query::build($formParams);
             }
         }
 
@@ -1710,10 +1724,12 @@ class EasApi
         if ($this->config->getUsername() !== null || $this->config->getPassword() !== null) {
             $headers['Authorization'] = 'Basic ' . base64_encode($this->config->getUsername() . ":" . $this->config->getPassword());
         }
+        // this endpoint requires Bearer token
+        if ($this->config->getAccessToken() !== null) {
+            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
+        }
 
-        // PULL REQUEST -->
         $defaultHeaders = $this->config->getDefaultHeaders();
-        // <-- PULL REQUEST
         if ($this->config->getUserAgent()) {
             $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
         }
@@ -1724,7 +1740,7 @@ class EasApi
             $headers
         );
 
-        $query = \GuzzleHttp\Psr7\build_query($queryParams);
+        $query = \GuzzleHttp\Psr7\Query::build($queryParams);
         return new Request(
             'PUT',
             $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
