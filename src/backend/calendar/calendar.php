@@ -237,7 +237,7 @@ class BackendCalendar extends AbstractWebTopBackendDiff {
 		
 		$obj->sensitivity = $this->toZPSyncAppointmentSensitivity($item->getPrvt());
 		$obj->busystatus = $this->toZPSyncAppointmentBusyStatus($item->getBusy());
-		if (!empty($item->getReminder())) {
+		if (is_int($item->getReminder()) && ($item->getReminder() > -1)) {
 			$obj->reminder = $item->getReminder();
 		}
 		
