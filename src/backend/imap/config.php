@@ -81,28 +81,28 @@ define('IMAP_AUTOSEEN_ON_DELETE', false);
 define('IMAP_FOLDER_CONFIGURED', true);
 
 // Folder prefix is the common part in your names (3, 4)
-define('IMAP_FOLDER_PREFIX', '');
+define('IMAP_FOLDER_PREFIX', \WT\EAS\Config::get()->getMailImapFolderPrefix());
 
 // Inbox will have the preffix preppend (3 & 4 to true)
-define('IMAP_FOLDER_PREFIX_IN_INBOX', false);
+define('IMAP_FOLDER_PREFIX_IN_INBOX', \WT\EAS\Config::get()->getMailImapFolderUsePrefixForInbox());
 
 // Inbox folder name (case doesn't matter) - (empty in 4)
-define('IMAP_FOLDER_INBOX', 'INBOX');
+define('IMAP_FOLDER_INBOX', \WT\EAS\Config::get()->getMailImapFolderNameInbox());
 
 // Sent folder name (case doesn't matter)
-define('IMAP_FOLDER_SENT', 'SENT');
+define('IMAP_FOLDER_SENT', \WT\EAS\Config::get()->getMailImapFolderNameSent());
 
 // Draft folder name (case doesn't matter)
-define('IMAP_FOLDER_DRAFT', 'DRAFTS');
+define('IMAP_FOLDER_DRAFT', \WT\EAS\Config::get()->getMailImapFolderNameDrafts());
 
 // Trash folder name (case doesn't matter)
-define('IMAP_FOLDER_TRASH', 'TRASH');
+define('IMAP_FOLDER_TRASH', \WT\EAS\Config::get()->getMailImapFolderNameTrash());
 
 // Spam folder name (case doesn't matter). Only showed as special by iOS devices
-define('IMAP_FOLDER_SPAM', 'SPAM');
+define('IMAP_FOLDER_SPAM', \WT\EAS\Config::get()->getMailImapFolderNameSpam());
 
 // Archive folder name (case doesn't matter). Only showed as special by iOS devices
-define('IMAP_FOLDER_ARCHIVE', 'ARCHIVE');
+define('IMAP_FOLDER_ARCHIVE', \WT\EAS\Config::get()->getMailImapFolderNameArchive());
 
 
 
@@ -111,7 +111,7 @@ define('IMAP_INLINE_FORWARD', true);
 
 // list of folders we want to exclude from sync. Names, or part of it, separated by |
 // example: dovecot.sieve|archive|spam
-define('IMAP_EXCLUDED_FOLDERS', '');
+define('IMAP_EXCLUDED_FOLDERS', \WT\EAS\Config::get()->getMailImapFoldersIgnored());
 
 
 
@@ -167,7 +167,12 @@ define('IMAP_FROM_LDAP_FULLNAME', '#givenname #sn');
 // mail => mail() php function
 // sendmail => sendmail executable
 // smtp => direct connection against SMTP
-define('IMAP_SMTP_METHOD', 'mail');
+//define('IMAP_SMTP_METHOD', 'mail');
+if (\WT\EAS\Config::get()->getMailSmtpServerEnabled()) {
+	define('IMAP_SMTP_METHOD', 'smtp');
+} else {
+	define('IMAP_SMTP_METHOD', 'mail');
+}
 
 global $imap_smtp_params;
 // SMTP Parameters
@@ -195,6 +200,18 @@ $imap_smtp_params = array();
 // IMPORTANT: To use SSL you must use PHP 5.1 or later, install openssl libs and use ssl:// within the host variable
 // IMPORTANT: To use SSL with PHP 5.6 you should set verify_peer, verify_peer_name and allow_self_signed
 //$imap_smtp_params = array('host' => 'ssl://localhost', 'port' => 465, 'auth' => true, 'username' => 'imap_username', 'password' => 'imap_password');
+if (\WT\EAS\Config::get()->getMailSmtpServerEnabled()) {
+	$imap_smtp_params['host'] = \WT\EAS\Config::get()->getMailSmtpServer();
+	$imap_smtp_params['port'] = \WT\EAS\Config::get()->getMailSmtpPort();
+	$imap_smtp_params['auth'] = \WT\EAS\Config::get()->getMailSmtpAuth();
+	$imap_smtp_params['username'] = \WT\EAS\Config::get()->getMailSmtpUsername();
+	$imap_smtp_params['password'] = \WT\EAS\Config::get()->getMailSmtpPassword();
+	if (\WT\EAS\Config::get()->getMailSmtpNoSSLCertificateCheck()) {
+		$imap_smtp_params['verify_peer'] = false;
+		$imap_smtp_params['verify_peer_name'] = false;
+		$imap_smtp_params['allow_self_signed'] = true;
+	}
+}
 
 
 

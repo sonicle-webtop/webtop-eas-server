@@ -16,7 +16,22 @@
 	"mail": {
 		"enabled": true,
 		"imapServer": "localhost",
-		"imapPort": 143
+		"imapPort": 143,
+		"imapFolderPrefix": "",
+		"imapFolderUsePrefixForInbox": false,
+		"imapFolderNameInbox": "INBOX",
+		"imapFolderNameSent": "SENT",
+		"imapFolderNameDrafts": "DRAFTS",
+		"imapFolderNameTrash": "TRASH",
+		"imapFolderNameSpam": "SPAM",
+		"imapFolderNameArchive": "ARCHIVE",
+		"imapFoldersIgnored": "",
+		"smtpServer": "localhost",
+		"smtpPort": 25,
+		"smtpNoSSLCertificateCheck": false,
+		"smtpAuth": false,
+		"smtpUsername": "usagenotrecommended",
+		"smtpPassword": "usagenotrecommended"
 	},
 	"calendar": {
 		"enabled": true,

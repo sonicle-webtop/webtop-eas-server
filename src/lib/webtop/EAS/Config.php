@@ -29,6 +29,20 @@ class Config extends AbstractConfig {
 		'mail.enabled' => true,
 		'mail.imapServer' => 'localhost',
 		'mail.imapPort' => 143,
+		'mail.imapFolderPrefix' => '',
+		'mail.imapFolderUsePrefixForInbox' => false,
+		'mail.imapFolderNameInbox' => 'INBOX',
+		'mail.imapFolderNameSent' => 'SENT',
+		'mail.imapFolderNameDrafts' => 'DRAFTS',
+		'mail.imapFolderNameTrash' => 'TRASH',
+		'mail.imapFolderNameSpam' => 'SPAM',
+		'mail.imapFolderNameArchive' => 'ARCHIVE',
+		'mail.imapFoldersIgnored' => '',
+		'mail.smtpPort' => 25,
+		'mail.smtpNoSSLCertificateCheck' => false,
+		'mail.smtpAuth' => false,
+		'mail.smtpUsername' => 'imap_username',
+		'mail.smtpPassword' => 'imap_password',
 		'calendar.enabled' => true,
 		'calendar.apiUrlPath' => '/api/com.sonicle.webtop.calendar/v2',
 		'contacts.enabled' => true,
@@ -111,6 +125,70 @@ class Config extends AbstractConfig {
 	
 	public function getMailImapPort() {
 		return $this->getValue('mail.imapPort', $this->defaults);
+	}
+	
+	public function getMailImapFolderPrefix() {
+		return $this->getValue('mail.imapFolderPrefix', $this->defaults);
+	}
+	
+	public function getMailImapFolderUsePrefixForInbox() {
+		return $this->getValue('mail.imapFolderUsePrefixForInbox', $this->defaults);
+	}
+	
+	public function getMailImapFolderNameInbox() {
+		return $this->getValue('mail.imapFolderNameInbox', $this->defaults);
+	}
+	
+	public function getMailImapFolderNameSent() {
+		return $this->getValue('mail.imapFolderNameSent', $this->defaults);
+	}
+	
+	public function getMailImapFolderNameDrafts() {
+		return $this->getValue('mail.imapFolderNameDrafts', $this->defaults);
+	}
+	
+	public function getMailImapFolderNameTrash() {
+		return $this->getValue('mail.imapFolderNameTrash', $this->defaults);
+	}
+	
+	public function getMailImapFolderNameSpam() {
+		return $this->getValue('mail.imapFolderNameSpam', $this->defaults);
+	}
+	
+	public function getMailImapFolderNameArchive() {
+		return $this->getValue('mail.imapFolderNameArchive', $this->defaults);
+	}
+	
+	public function getMailImapFoldersIgnored() {
+		return $this->getValue('mail.imapFoldersIgnored', $this->defaults);
+	}
+	
+	public function getMailSmtpServerEnabled() {
+		return !empty($this->getMailSmtpServer());
+	}
+	
+	public function getMailSmtpServer() {
+		return $this->getValue('mail.smtpServer', $this->defaults);
+	}
+	
+	public function getMailSmtpPort() {
+		return $this->getValue('mail.smtpPort', $this->defaults);
+	}
+	
+	public function getMailSmtpNoSSLCertificateCheck() {
+		return $this->getValue('mail.smtpNoSSLCertificateCheck', $this->defaults);
+	}
+	
+	public function getMailSmtpAuth() {
+		return $this->getValue('mail.smtpAuth', $this->defaults);
+	}
+	
+	public function getMailSmtpUsername() {
+		return $this->getValue('mail.smtpUsername', $this->defaults);
+	}
+	
+	public function getMailSmtpPassword() {
+		return $this->getValue('mail.smtpPassword', $this->defaults);
 	}
 	
 	public function getCalendarEnabled() {

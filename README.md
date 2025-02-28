@@ -120,6 +120,37 @@ At the bare minimum, you need to set values to the following options: *log.dir*,
   The IMAP server address. *(Defaults to: `localhost`)*
 * `mail.imapPort` \[int]
   The IMAP server port. *(Defaults to: `143`)*
+* `mail.imapFolderPrefix` \[string]
+  Specifies the prefix to prepend to folder names. *(Defaults to: ``)*
+* `mail.imapFolderUsePrefixForInbox` \[boolean]
+  Specified whether to prepend the prefix for INBOX folder. *(Defaults to: `false`)*
+* `mail.imapFolderNameInbox` \[string]
+  The Inbox folder name (case doesn't matter). *(Defaults to: `INBOX`)*
+* `mail.imapFolderNameSent` \[string]
+  The Sent folder name (case doesn't matter). *(Defaults to: `SENT`)*
+* `mail.imapFolderNameDrafts` \[string]
+  The Drafts folder name (case doesn't matter). *(Defaults to: `DRAFTS`)*
+* `mail.imapFolderNameTrash` \[string]
+  The Trash folder name (case doesn't matter). *(Defaults to: `TRASH`)*
+* `mail.imapFolderNameSpam` \[string]
+  The Spam folder name (case doesn't matter). *(Defaults to: `SPAM`)*
+* `mail.imapFolderNameArchive` \[string]
+  The Archive folder name (case doesn't matter). *(Defaults to: `ARCHIVE`)*
+* `mail.imapFoldersIgnored` \[string]
+  List of folders we want to exclude from sync; names, or part of it, separated by | (pipe) char. *(Defaults to: ``)*
+* `mail.smtpServer` \[string]
+  The SMTP server address. If not specified PHP's internal mail() function will be used for sending messages.
+* `mail.smtpPort` \[int]
+  The SMTP server port. *(Defaults to: `25`)*
+  If you want to use SSL with port 25 or port 465 you must preppend "ssl://" before the hostname or IP of your SMTP server.
+* `mail.smtpNoSSLCertificateCheck` \[boolean]
+  Combined setting to completely disable SSL verifications. Including "verify_peer", "verify_peer_name" and "allow_self_signed". *(Defaults to: `false`)*
+* `mail.smtpAuth` \[boolean]
+  Specifies whether to enable authentication for SMTP connection. *(Defaults to: `false`)*
+* `mail.smtpUsername` \[string]
+  Overrides the internal default to current-user's username (the recommended setup) for any SMTP connection. This should not be changed.
+* `mail.smtpPassword` \[string]
+  Overrides the internal default to current-user's password (the recommended setup) for any SMTP connection. This should not be changed.
 * `calendar.enabled` \[boolean]
   False to disable events/appointmens support. *(Defaults to: `true`)*
 * `calendar.apiUrlPath` \[string]
