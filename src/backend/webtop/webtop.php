@@ -14,15 +14,9 @@ class BackendWebTop extends BackendCombined {
 		// This substantially avoids backward states compatibility issues.
 		
 		if (Config::get()->getMailEnabled()) {
-			// Add the path for Andrew's Web Libraries to include_path
-			// because it is required for the emails with ics attachments
-			// @see https://jira.z-hub.io/browse/ZP-1149
-			set_include_path(get_include_path().PATH_SEPARATOR . WT_EAS_ROOT.'/php-awl');
-			
-			require_once WT_EAS_ROOT.'/backend/imap/config.php';
-			
+			require_once WT_EAS_ROOT.'/backend/wtimap/wtimap.php';
 			$backends['i'] = [
-				'name' => 'BackendIMAP'
+				'name' => 'BackendWTIMAP'
 			];
 			$folderackends[SYNC_FOLDER_TYPE_INBOX] = 'i';
 			$folderackends[SYNC_FOLDER_TYPE_DRAFTS] = 'i';
@@ -83,7 +77,7 @@ class BackendWebTop extends BackendCombined {
 		$backend_values = array_unique(array_values($this->config['folderbackend']));
         foreach ($backend_values as $i) {
 			ZLog::Write(LOGLEVEL_DEBUG, sprintf("Including backend %s", $this->config['backends'][$i]['name']));
-            ZPush::IncludeBackend($this->config['backends'][$i]['name']);
+            //ZPush::IncludeBackend($this->config['backends'][$i]['name']); // Skip include call!
             $this->backends[$i] = new $this->config['backends'][$i]['name']();
         }
         ZLog::Write(LOGLEVEL_DEBUG, sprintf("Combined %d backends loaded.", count($this->backends)));
