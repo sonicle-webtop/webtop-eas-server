@@ -9,7 +9,12 @@
 		"dir": "/var/lib/webtop-eas/state",
 		"useLegacyFolderIds": false
 	},
+	"autodiscover": {
+		"enabled": false,
+		"hostname": "myhostname.mydomain"
+	},
 	"webtop": {
+		"stripSubdomainFromLoginUsername": false,
 		"apiBaseUrl": "http://localhost:8080/webtop",
 		"apiUrlPath": "/api/com.sonicle.webtop.core/v1"
 	},

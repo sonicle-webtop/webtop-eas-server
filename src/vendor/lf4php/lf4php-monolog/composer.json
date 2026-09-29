@@ -5,17 +5,17 @@
     "keywords": ["lf4php", "facade", "wrapper", "monolog"],
     "authors": [
         {
-            "name": "Szurovecz János",
+            "name": "Janos Szurovecz",
             "homepage": "http://www.szjani.hu/"
         }
     ],
     "require": {
-        "php": ">=5.3.0",
+        "php": ">=7.1",
         "monolog/monolog": "~1.2",
-        "lf4php/lf4php": "^4.2.2"
+        "lf4php/lf4php": "~5.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "3.7.*"
+        "phpunit/phpunit": "7.0.2"
     },
     "autoload": {
         "psr-0": {"lf4php": "src/"}

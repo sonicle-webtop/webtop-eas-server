@@ -13,9 +13,8 @@ define('WT_EAS_ROOT', __DIR__);
 $config = \WT\EAS\Config::get();
 \WT\Log::init('eas-server', $config->getLogLevel(), $config->getLogFile());
 
-//$ZPUSH_SRC = \WT\EAS\Config::get()->getZPushSrc();
-$ZPUSH_TARGET_SCRIPT = 'z-push-admin.php';
+$BOOTSTRAP_TARGET_SCRIPT = 'z-push-admin.php';
 if (php_sapi_name() !== 'cli') {
-	die('<h1>'.$ZPUSH_TARGET_SCRIPT.' must NOT be called as web-page --> exiting !!!</h1>');
+	die('<h1>' . $BOOTSTRAP_TARGET_SCRIPT . ' must NOT be called as web-page --> exiting !!!</h1>');
 }
-include WT_EAS_ROOT.'/inc/zpush.php';
+include WT_EAS_ROOT . '/inc/bootstrap.php';

@@ -21,7 +21,24 @@ class Util {
 		if (file_exists($file)) {
 			$version = fgets(fopen($file, 'r'));
 		}
-		return $version;
+		return trim(preg_replace('/\s+/', '', $version));
+	}
+	
+	public static function getDomainPartFromEmail($email) {
+		$pos = strpos($email, '@');
+		if ($pos === false) {
+			return false;
+		}
+		return substr($email, $pos+1);
+	}
+	
+	public static function stripSubdomain($domainPart) {
+		$parts = explode('.', $domainPart);
+		if (count($parts) >= 2) {
+			return implode('.', array_slice($parts, -2));
+		} else {
+			return $domainPart;
+		}
 	}
 	
 	public static function stripLeadingDirSeparator($path, $separator = DIRECTORY_SEPARATOR) {

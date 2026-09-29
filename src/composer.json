@@ -12,16 +12,19 @@
     ],
 	"optimize-autoloader": true,	
     "require": {
-		"php": ">=7.0",
-		"lf4php/lf4php": "^4.2.2",
-		"lf4php/lf4php-monolog": "^3.1.2",
+		"php": ">=7.4.0",
+		"z-push/z-push-dev": "2.7.6",
+		"hassankhan/config": "^3.2",
+		"symfony/yaml": "~5.4",
+		"lf4php/lf4php": "^5.0.0",
+		"lf4php/lf4php-monolog": "^4.0.0",
 		"monolog/monolog": "^1.27",
-		"hassankhan/config": "^1.0",
-		"guzzlehttp/guzzle": "^6.5.8",
-        "html2text/html2text": "^4.2",
-		"symfony/yaml": "~3.4",
-		"symfony/http-foundation": "~3.4.47",
-		"data-uri/data-uri": "^0.2.5"
+		"guzzlehttp/guzzle": "~6.5.8",
+		"html2text/html2text": "^4.3",
+		"data-uri/data-uri": "^0.2.5",
+		"symfony/http-foundation": "5.4.50 as 4.4.49",
+        "symfony/deprecation-contracts": "~2.5",
+		"symfony/polyfill-intl-idn": "1.38.1"
 	},
 	"autoload": {
 		"psr-4": {
@@ -32,12 +35,13 @@
 			"WT\\Client\\Tasks\\": "lib/webtop-tasks-client/"
 		},
 		"classmap": [
+			"backend/ipcsharedmemory/",
 			"backend/log/",
 			"backend/webtop/"
 		],
 		"files": [
 			"package-info.php",
-			"vendor/z-push/z-push/src/vendor/autoload.php"
+			"vendor/z-push/z-push-dev/src/vendor/autoload.php"
 		]
 	}
 }

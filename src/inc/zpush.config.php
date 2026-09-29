@@ -75,7 +75,30 @@
  *  When another implementation should be used, the class can be set here explicitly.
  *  If empty Z-Push will try to use available providers.
  */
-    define('IPC_PROVIDER', '');
+    define('IPC_PROVIDER', '\ScopedIpcSharedMemoryProvider');
+    define('IPC_PROVIDER_TYPE_OFFSET', \WT\EAS\Config::get()->getIPCKeyOffset() + 10000);
+	
+//  IPC shared-memory key namespacing.
+//  
+//  Z-Push's native IPC "type" identifiers are small numbers of at most 4 digits
+//  (e.g. 2, 20, 1337, 5173). To let two server instances sharing the same host
+//  (typically two PHP-FPM pools running different PHP versions) coexist without
+//  clobbering each other's SysV shared-memory segments, every key is shifted into
+//  a higher decimal range while the original 4-digit type stays readable in the
+//  low positions:
+//  
+//   <ipc.key.offset> <base offset> <original type>
+//       x100000          10000         0..9999
+//
+//   e.g. type 1337 -> 10000 + 1337                 = 11337
+//        type 1337 -> (3 * 100000) + 10000 + 1337  = 311337   (ipc.key.offset = 3)
+//
+//  The fixed 10000 occupies the ten-thousands digit only. If a different fixed
+//  namespace is ever needed, it may be changed solely to a single non-zero
+//  ten-thousands digit, i.e. 20000, 30000, ... up to 90000 (2*10000 .. 9*10000).
+//  Tt must NOT reach 100000 or beyond: that place value is reserved for the
+//  per-instance offset from ipc.key.offset (getIPCKeyOffset() yields 100000..900000),
+//  and overlapping the two ranges would let keys collide again.
 
 /**********************************************************************************
  *  Logging settings
@@ -318,7 +341,8 @@
     // Delivery receipt requests
     define('KOE_CAPABILITY_RECEIPTS', true);
     // Impersonate other users
-    define('KOE_CAPABILITY_IMPERSONATE', true);
+	// Force false to circumvent PHP8 error ("stripos(): Passing null to parameter #1 ($haystack) of type string is deprecated in /vendor/z-push/z-push-dev/src/lib/request/request.php on line 192")
+    define('KOE_CAPABILITY_IMPERSONATE', false); // <= Forcibly disabled!
 
     // To synchronize the GAB KOE, the GAB store and folderid need to be specified.
     // Use the gab-sync script to generate this data. The name needs to

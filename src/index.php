@@ -13,5 +13,5 @@ define('WT_EAS_ROOT', __DIR__);
 $config = \WT\EAS\Config::get();
 \WT\Log::init('eas-server', $config->getLogLevel(), $config->getLogFile());
 
-$ZPUSH_TARGET_SCRIPT = 'index.php';
-include WT_EAS_ROOT.'/inc/zpush.php';
+$BOOTSTRAP_TARGET_SCRIPT = 'index.php';
+include WT_EAS_ROOT . '/inc/bootstrap.php';

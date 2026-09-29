@@ -20,7 +20,7 @@ class Log {
 	public static function init($rootName, $level, $file = NULL) {
 		if (!self::$instance) {
 			// Initialize Monolog
-			$lev = Logger::toMonologLevel($level);
+			$lev = self::toMonologLevel($level, \Monolog\Logger::ERROR);
 			$logger = new Logger($rootName);
 			if (!empty($file)) {
 				$handler = new \Monolog\Handler\StreamHandler($file, $lev);
@@ -35,6 +35,26 @@ class Log {
 			$factory = \lf4php\impl\StaticLoggerBinder::$SINGLETON->getLoggerFactory();
 			$factory->setRootMonologLogger(self::$instance);
 		}
+	}
+	
+	/**
+	 * Returns the corresponding level value in Monolog "language".
+	 * @param string $level Our loggin level. One of: ERROR, WARN, INFO, DEBUG, TRACE, OFF
+	 * @param int $defaultMonologLevel The default level to return in case of missing match.
+	 * @return int
+	 */
+	private static function toMonologLevel($level, $defaultMonologLevel) {
+		if (is_string($level)) {
+			$mlevel = $level;
+			if ('TRACE' == $level) {
+				$mlevel = 'DEBUG';
+			}
+			$ret = Logger::toMonologLevel($mlevel);
+			if (is_int($ret)) {
+				return $ret;
+			}
+		}
+		return $defaultMonologLevel;
 	}
 	
 	/**

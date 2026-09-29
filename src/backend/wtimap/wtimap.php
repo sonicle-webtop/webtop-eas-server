@@ -18,6 +18,7 @@ class BackendWTIMAP extends BackendIMAP {
 			$imap_smtp_params['username'] = Config::get()->getMailSmtpUsername();
 			$imap_smtp_params['password'] = Config::get()->getMailSmtpPassword();
 			if (Config::get()->getMailSmtpNoSSLCertificateCheck()) {
+				ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendWTIMAP(): configuring params to relax SSL requirements..."));
 				$imap_smtp_params['verify_peer'] = false;
 				$imap_smtp_params['verify_peer_name'] = false;
 				$imap_smtp_params['allow_self_signed'] = true;

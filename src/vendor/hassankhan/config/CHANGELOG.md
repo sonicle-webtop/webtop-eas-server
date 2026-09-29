@@ -2,6 +2,78 @@
 
 All notable changes to `Config` will be documented in this file
 
+## 3.2.0 - 2024-12-09
+
+### Added
+* PHP 8.3 and 8.4 to the build matrix (#164)
+
+### Fixed
+* Fatal error when root is null in has() method (#159 and #160)
+* PHP 8.4 deprecations implicitly marking parameter as nullable is deprecated (#163)
+
+
+## 3.1.0 - 2022-12-20
+
+### Added
+* PHP 8.2 to the build matrix (#154)
+
+### Fixed
+* Use assertEquals instead of assertSame (#153)
+* Namespaces in tests (#154)
+
+### Removed
+* .travis.yml file (#152)
+* support for the end of life PHP versions (#144)
+
+
+## 3.0.1 - 2022-03-26
+
+### Added
+- Fix merge method (#145 and #147)
+
+## 3.0.0 - 2021-12-30
+
+### Added
+- Move CI to GitHub actions (#132, #136 and #137)
+- PHP 8.0 support, adding it to the build matrix (#138 and #139)
+- PHP 8.1 support, adding it to the build matrix (#135, #140 and #141)
+
+## 2.2.0 - 2020-12-07
+
+### Added
+- Serialization support (#127)
+- Support for Properties files (#128)
+
+### Fixed
+- Test enhancement (#126)
+- Typehint on Xml parser, parse method (#130)
+
+## 2.1.0 - 2019-09-01
+
+### Added
+- Support for writing configuration back to file and string (#122)
+
+## 2.0.2 - 2019-04-06
+
+### Fixed
+- Implementations of `ParserInterface` and cleanup (#120)
+- Tests for PHP 7
+
+## 2.0.1 - 2019-02-02
+
+### Fixed
+- Parsing PHP file (#114)
+- Parsing PHP string with `$config` variable (#118)
+
+## 2.0.0 - 2018-10-03
+
+### Added
+- Usage of short array syntax (#109)
+- Support for string parsers (#111)
+
+### Breaking changes
+- Changes of interface and parsers
+
 ## 1.1.0 - 2018-08-22
 
 ### Added

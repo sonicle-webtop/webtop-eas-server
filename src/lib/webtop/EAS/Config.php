@@ -24,7 +24,10 @@ class Config extends AbstractConfig {
 		'log.level' => 'ERROR',
 		'log.name' => 'server.log',
 		'log.error.name' => 'server_error.log',
+		'ipc.key.offset' => 0,
 		'state.useLegacyFolderIds' => false,
+		'autodiscover.enabled' => false,
+		'webtop.stripSubdomainFromLoginUsername' => false,
 		'webtop.apiUrlPath' => '/api/com.sonicle.webtop.core/v1',
 		'mail.enabled' => true,
 		'mail.imapServer' => 'localhost',
@@ -45,6 +48,7 @@ class Config extends AbstractConfig {
 		'mail.smtpPassword' => 'imap_password',
 		'calendar.enabled' => true,
 		'calendar.apiUrlPath' => '/api/com.sonicle.webtop.calendar/v2',
+		'calendar.syncBackMonths' => 1,
 		'contacts.enabled' => true,
 		'contacts.apiUrlPath' => '/api/com.sonicle.webtop.contacts/v2',
 		'tasks.enabled' => true,
@@ -62,7 +66,7 @@ class Config extends AbstractConfig {
 	}
 	
 	public function getZPushSrc() {
-		return '/vendor/z-push/z-push/src';
+		return '/vendor/z-push/z-push-dev/src';
 	}
 	
 	public function getTimezone() {
@@ -99,12 +103,34 @@ class Config extends AbstractConfig {
 		return is_array($value) ? $value : array();
 	}
 	
+	public function getIPCKeyOffset() {
+		// Returns the IPC key offset derived from the ipc.key.offset config entry (1..9).
+		// The value is multiplied by 100000 so it occupies the sixth decimal digit,
+		// above the fixed 10000 base offset (fifth digit) and above the original
+		// Z-Push type identifiers (at most four digits). Any out-of-range or
+		// non-integer value silently falls back to 0 (no per-instance offset).
+		$value = $this->getValue('ipc.key.offset', $this->defaults);
+		return (is_int($value) && $value > 0 && $value < 10) ? ($value * 100000) : 0;
+	}
+	
 	public function getStateDir() {
 		return \WT\Util::stripTrailingDirSeparator($this->getValue('state.dir'));
 	}
 	
 	public function getUseLegacyFolderIds() {
 		return $this->getValue('state.useLegacyFolderIds', $this->defaults);
+	}
+	
+	public function getAutodiscoverEnabled() {
+		return $this->getValue('autodiscover.enabled', $this->defaults);
+	}
+	
+	public function getAutodiscoverHostname() {
+		return $this->getValue('autodiscover.hostname', $this->defaults);
+	}
+	
+	public function getWTStripSubdomainFromLoginUsername() {
+		return $this->getValue('webtop.stripSubdomainFromLoginUsername', $this->defaults);
 	}
 	
 	public function getWTApiBaseURL() {
@@ -197,6 +223,10 @@ class Config extends AbstractConfig {
 	
 	public function getCalendarApiUrlPath() {
 		return '/'.\WT\Util::stripDirSeparator($this->getValue('calendar.apiUrlPath', $this->defaults), '/');
+	}
+	
+	public function getCalendarSyncBackMonths() {
+		return (int) $this->getValue('calendar.syncBackMonths', $this->defaults);
 	}
 	
 	public function getContactsEnabled() {

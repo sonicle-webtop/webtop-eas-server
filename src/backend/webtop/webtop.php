@@ -14,7 +14,7 @@ class BackendWebTop extends BackendCombined {
 		// This substantially avoids backward states compatibility issues.
 		
 		if (Config::get()->getMailEnabled()) {
-			require_once WT_EAS_ROOT.'/backend/wtimap/wtimap.php';
+			//require_once WT_EAS_ROOT.'/backend/wtimap/wtimap.php';
 			$backends['i'] = [
 				'name' => 'BackendWTIMAP'
 			];
@@ -29,27 +29,27 @@ class BackendWebTop extends BackendCombined {
 		}
 		
 		if (Config::get()->getContactsEnabled()) {
-			require_once WT_EAS_ROOT.'/backend/contacts/contacts.php';
+			//require_once WT_EAS_ROOT.'/backend/wtcontacts/wtcontacts.php';
 			$backends['v'] = [
-				'name' => 'BackendContacts'
+				'name' => 'BackendWTContacts'
 			];
 			$folderackends[SYNC_FOLDER_TYPE_CONTACT] = 'v';
 			$folderackends[SYNC_FOLDER_TYPE_USER_CONTACT] = 'v';
 		}
 		
 		if (Config::get()->getCalendarEnabled()) {
-			require_once WT_EAS_ROOT.'/backend/calendar/calendar.php';
+			//require_once WT_EAS_ROOT.'/backend/wtcalendar/wtcalendar.php';
 			$backends['c'] = [
-				'name' => 'BackendCalendar'
+				'name' => 'BackendWTCalendar'
 			];
 			$folderackends[SYNC_FOLDER_TYPE_APPOINTMENT] = 'c';
 			$folderackends[SYNC_FOLDER_TYPE_USER_APPOINTMENT] = 'c';
 		}
 		
 		if (Config::get()->getTasksEnabled()) {
-			require_once WT_EAS_ROOT.'/backend/tasks/tasks.php';
+			//require_once WT_EAS_ROOT.'/backend/wttasks/wttasks.php';
 			$backends['t'] = [
-				'name' => 'BackendTasks'
+				'name' => 'BackendWTTasks'
 			];
 			$folderackends[SYNC_FOLDER_TYPE_TASK] = 't';
 			$folderackends[SYNC_FOLDER_TYPE_USER_TASK] = 't';
@@ -71,20 +71,36 @@ class BackendWebTop extends BackendCombined {
 	}
 	
 	public function __construct() {
-		//parent::__construct(); // Skip parent constructor call!
+		// Do NOT call constructor: this allows to skip call to default BackendCombinedConfig::GetBackendCombinedConfig (see parent::__construct() for more details)
 		$this->config = self::GetBackendCombinedConfig();
 		
+		// These lines are basically those of original constructor...
 		$backend_values = array_unique(array_values($this->config['folderbackend']));
         foreach ($backend_values as $i) {
 			ZLog::Write(LOGLEVEL_DEBUG, sprintf("Including backend %s", $this->config['backends'][$i]['name']));
-            //ZPush::IncludeBackend($this->config['backends'][$i]['name']); // Skip include call!
+            //ZPush::IncludeBackend($this->config['backends'][$i]['name']); // Use our IncludeBackend (see below)!
+			self::IncludeBackend($this->config['backends'][$i]['name']);
             $this->backends[$i] = new $this->config['backends'][$i]['name']();
-        }
-        ZLog::Write(LOGLEVEL_DEBUG, sprintf("Combined %d backends loaded.", count($this->backends)));
+		}
+		ZLog::Write(LOGLEVEL_DEBUG, sprintf("Combined %d backends loaded.", count($this->backends)));
+	}
+	
+	public function Logon($username, $domain, $password) {
+		if (Config::get()->getWTStripSubdomainFromLoginUsername()) {
+			$email_domain = WT\Util::getDomainPartFromEmail($username);
+			if ($email_domain != false) {
+				$logon_username = Utils::GetLocalPartFromEmail($username) . '@' . WT\Util::stripSubdomain($email_domain);
+				if ($logon_username != $username) {
+					ZLog::Write(LOGLEVEL_DEBUG, sprintf("Sub-domain stripped from Logon username '%s' -> '%s'", $username, $logon_username));
+					return parent::Logon($logon_username, $domain, $password);
+				}
+			}
+		}
+		return parent::Logon($username, $domain, $password);
 	}
 	
 	public function SendMail($sm) {
-        ZLog::Write(LOGLEVEL_DEBUG, "Combined->SendMail()");
+        ZLog::Write(LOGLEVEL_DEBUG, "BackendWebTop->SendMail()");
         // Convert source folderid
 		$backendId = null;
         if (isset($sm->source->folderid)) {
@@ -99,5 +115,47 @@ class BackendWebTop extends BackendCombined {
 			}
 		}
         return false;
+    }
+	
+	public function GetUserDetails($username) {
+		ZLog::Write(LOGLEVEL_DEBUG, "BackendWebTop->GetUserDetails()");
+        // Find a backend that can provide the information
+		foreach ($this->backends as $backend) {
+			// Do NOT get info from IMAP backends, they NOT have user informations!
+            if (!($backend instanceof BackendIMAP) && method_exists($backend, "GetUserDetails")) {
+                return $backend->GetUserDetails($username);
+            }
+        }
+        return parent::GetUserDetails($username);
+	}
+	
+	/**
+	 * Loads a backend file.
+	 * This is just a clone of ZPush::IncludeBackend methods that uses custom base-path instead of REAL_BASE_PATH.
+	 * @param string $backendname
+	 * @return boolean
+	 * @throws FatalNotImplementedException
+	 */
+	static public function IncludeBackend($backendname) {
+        if ($backendname == false) return false;
+
+        $backendname = strtolower($backendname);
+        if (substr($backendname, 0, 7) !== 'backend')
+            throw new FatalNotImplementedException(sprintf("Backend '%s' is not allowed", $backendname));
+
+        $rbn = substr($backendname, 7);
+
+        $subdirbackend = WT_EAS_ROOT . '/' . "backend/" . $rbn . "/" . $rbn . ".php";
+        $stdbackend = WT_EAS_ROOT . '/' . "backend/" . $rbn . ".php";
+
+        if (is_file($subdirbackend))
+            $toLoad = $subdirbackend;
+        else if (is_file($stdbackend))
+            $toLoad = $stdbackend;
+        else
+            return false;
+
+        ZLog::Write(LOGLEVEL_DEBUG, sprintf("Including backend file: '%s'", $toLoad));
+        return include_once($toLoad);
     }
 }

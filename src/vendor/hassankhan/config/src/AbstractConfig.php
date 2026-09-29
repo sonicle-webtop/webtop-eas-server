@@ -28,7 +28,7 @@ abstract class AbstractConfig implements ArrayAccess, ConfigInterface, Iterator
      *
      * @var array
      */
-    protected $cache = array();
+    protected $cache = [];
 
     /**
      * Constructor method and sets default options, if any
@@ -50,7 +50,7 @@ abstract class AbstractConfig implements ArrayAccess, ConfigInterface, Iterator
      */
     protected function getDefaults()
     {
-        return array();
+        return [];
     }
 
     /**
@@ -85,7 +85,7 @@ abstract class AbstractConfig implements ArrayAccess, ConfigInterface, Iterator
             }
             $cacheKey .= $part;
             if (!isset($root[$part]) && count($segs)) {
-                $root[$part] = array();
+                $root[$part] = [];
             }
             $root = &$root[$part];
 
@@ -123,7 +123,7 @@ abstract class AbstractConfig implements ArrayAccess, ConfigInterface, Iterator
 
         // nested case
         foreach ($segments as $segment) {
-            if (array_key_exists($segment, $root)) {
+            if (is_array($root) && array_key_exists($segment, $root)) {
                 $root = $root[$segment];
                 continue;
             } else {
@@ -146,6 +146,7 @@ abstract class AbstractConfig implements ArrayAccess, ConfigInterface, Iterator
     public function merge(ConfigInterface $config)
     {
         $this->data = array_replace_recursive($this->data, $config->all());
+        $this->cache = [];
         return $this;
     }
 
@@ -168,6 +169,7 @@ abstract class AbstractConfig implements ArrayAccess, ConfigInterface, Iterator
      *
      * @return mixed
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         return $this->get($offset);
@@ -180,6 +182,7 @@ abstract class AbstractConfig implements ArrayAccess, ConfigInterface, Iterator
      *
      * @return bool
      */
+    #[\ReturnTypeWillChange]
     public function offsetExists($offset)
     {
         return $this->has($offset);
@@ -193,6 +196,7 @@ abstract class AbstractConfig implements ArrayAccess, ConfigInterface, Iterator
      *
      * @return void
      */
+    #[\ReturnTypeWillChange]
     public function offsetSet($offset, $value)
     {
         $this->set($offset, $value);
@@ -205,6 +209,7 @@ abstract class AbstractConfig implements ArrayAccess, ConfigInterface, Iterator
      *
      * @return void
      */
+    #[\ReturnTypeWillChange]
     public function offsetUnset($offset)
     {
         $this->set($offset, null);
@@ -222,6 +227,7 @@ abstract class AbstractConfig implements ArrayAccess, ConfigInterface, Iterator
      *     function returns false. If the array is undefined, the function
      *     returns null
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         return (is_array($this->data) ? current($this->data) : null);
@@ -234,6 +240,7 @@ abstract class AbstractConfig implements ArrayAccess, ConfigInterface, Iterator
      *     If the array is empty or undefined or there is no element at the
      *     cursor, the function returns null
      */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return (is_array($this->data) ? key($this->data) : null);
@@ -247,6 +254,7 @@ abstract class AbstractConfig implements ArrayAccess, ConfigInterface, Iterator
      *     array after the move, the function returns false. If the data array
      *     is undefined, the function returns null
      */
+    #[\ReturnTypeWillChange]
     public function next()
     {
         return (is_array($this->data) ? next($this->data) : null);
@@ -260,6 +268,7 @@ abstract class AbstractConfig implements ArrayAccess, ConfigInterface, Iterator
      *     returns false. If the data array is undefined, the function returns
      *     null
      */
+    #[\ReturnTypeWillChange]
     public function rewind()
     {
         return (is_array($this->data) ? reset($this->data) : null);
@@ -270,6 +279,7 @@ abstract class AbstractConfig implements ArrayAccess, ConfigInterface, Iterator
      *
      * @return bool True if the current index is valid; false otherwise
      */
+    #[\ReturnTypeWillChange]
     public function valid()
     {
         return (is_array($this->data) ? key($this->data) !== null : false);

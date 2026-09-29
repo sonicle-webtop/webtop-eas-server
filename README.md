@@ -15,7 +15,7 @@ Make sure to have at least WebTop release **wt-5.27.0** (pay attention to update
 This backend is built on top of [Z-Push](http://z-push.org/), so you need to so you need to satisfy at least z-push [requirements](https://wiki.z-hub.io/display/ZP/Installation+from+source).
 Then, summing:
 
-* PHP >= 5.5.X (with php-imap and php-mbstring extensions installed)
+* PHP >= 7.4.X (with pdo, php-imap, php-mbstring, php-intl extensions installed)
 * Apache with mod_php
 * WebTop instance supporting EAS REST API (core >= v.5.6.0, calendar >= v.5.21.0, contacts >= v.5.18.0, tasks >= v.5.15.0)
 
@@ -44,12 +44,12 @@ The standard installation is to create a dedicated folder `webtop-eas` into your
 </VirtualHost>
 ```
 
-### Service AutoDiscovery (&#9888; not supported yet)
+### Service AutoDiscovery
 
 AutoDiscover is the service used to simplify the configuration of collaboration accounts for clients, especially for mobile phones.
 
 If AutoDiscover configuration is turned-on, the user is only required to fill in his email address and the password on his phone.
-You can find a detailed explanation [here](https://wiki.z-hub.io/display/ZP/Configuring+Z-Push+Autodiscover/).
+You can find a detailed explanation [here](https://github.com/Z-Hub/Z-Push/blob/develop/src/autodiscover/INSTALL).
 
 If you followed the standard installation (subfolder under your Apache's document-root), you can update you virtual-host configuration simply adding the following lines:
 
@@ -89,15 +89,15 @@ You can instead find a fully-featured example in [example-full.config.json](./sr
 
 ### Options
 
-At the bare minimum, you need to set values to the following options: *log.dir*, *state.dir* and *webtop.apiBaseUrl*. (you can find them below marked with &#9888;)
+At the bare minimum, you need to set values to the following options: *log.dir*, *state.dir* and *webtop.apiBaseUrl*. (you can find them below marked with :o:)
 
 * `timezone` \[string]
   The default server timezone. It must be one of the [supported timezones](http://www.php.net/manual/en/timezones.php), excluding those that do not start with the following prefixes: Africa, America, Asia, Atlantic, Australia, Europe, Indian, Pacific. *(Defaults to: Europe/Rome)*
 * `log.level` \[string]
   The actual logging level. Allowed values are: OFF, ERROR, WARN, INFO, DEBUG, TRACE. *(Defaults to: `ERROR`)*
   These levels are mapped back tp z-push own levels: ERROR displays also fatal entries, and TRACE will produces WBXML output. If you need more control over z-push levels you can edit [zpush.config.php](./src/inc/zpush.config.php) file manually.
-* &#9888; `log.dir` \[string]
-  A path that points to the directory where the log files (see below) will be written. (without trailling separator)
+* :o: `log.dir` \[string]
+  A path that points to the directory where the log files (see below) will be written. *(Required)* (without trailling separator)
 * `log.file` [string]
   This can be used for specifying the log full file-name directly, instead of using `log.dir` (and `log.name`). This takes precedence over the previous ones. NB: If you want to redirect all logging output to stdout you can simply point this property to `php://stdout`.
 * `log.name` \[string]
@@ -105,17 +105,24 @@ At the bare minimum, you need to set values to the following options: *log.dir*,
 * `log.specialUsers` \[string[]]
   Comma separated list of users for which generate a dedicated log file in order to simplify debugging.
   Files will be produced in `log.dir` at `TRACE` loggin level.
-* &#9888; `state.dir` \[string]
+* `ipc.key.offset` \[int]
+  Number between 1 to 9 to be used as an extra IPC SysV offset to be added to the internal one. *(Defaults to: `0`)*
+* :o: `state.dir` \[string]
   A path that points to the directory where the state files/directories will be written. (without trailling separator)
-  Note that the configured webserver (or php processor) needs to have full read and write permissions on this directory.
+  Note that the configured webserver (or php processor) needs to have full read and write permissions on this directory. *(Required)*
 * `state.useLegacyFolderIds` \[boolean]
-  True to activate backward compatibility to old `z-push-webtop` folderIDs, this prevents the device from performing a full resync of data after transitioning from `z-push-webtop` to `webtop-eas-server`. *(Defaults to: `false`)*
-* &#9888; `webtop.apiBaseUrl` \[string]
-  This server relies on REST APIs in order to gather all the information for serving clients. This URL reflects the address at which the current WebTop installation responds to. Note that since this is basically a server-to-server configuration, you could use local addresses; this will speed-up HTTP requests. Eg. `http://localhost:8080/webtop`.
+  Set to `true` to activate backward compatibility to old `z-push-webtop` folderIDs, this prevents the device from performing a full resync of data after transitioning from `z-push-webtop` to `webtop-eas-server`. *(Defaults to: `false`)*
+* `autodiscover.enabled` \[boolean]
+  Set to `true` to switch-on autodiscovery functionality. Remember that this require a proper configuration of you webserver, as described in [Service AutoDiscovery](#service-autodiscovery) section. *(Defaults to: `false`)*
+* `autodiscover.hostname` \[string]
+  The EAS server's hostname for autodiscover purposes. Typically it points to the same FQDN where EAS services are reachable from the clients. *(Required when autodiscover is activated)*
+* `webtop.stripSubdomainFromLoginUsername` \[boolean]
+* :o: `webtop.apiBaseUrl` \[string]
+  This server relies on REST APIs in order to gather all the information for serving clients. This URL reflects the address at which the current WebTop installation responds to. Note that since this is basically a server-to-server configuration, you could use local addresses; this will speed-up HTTP requests. Eg. `http://localhost:8080/webtop`. *(Required)*
 * `webtop.apiUrlPath` \[string]
   Path, added to the base, to target the REST endpoint for core related calls. This should not be changed. *(Defaults to: `/api/com.sonicle.webtop.core/v1`)*
 * `mail.enabled` \[boolean]
-  False to disable email support. *(Defaults to: `true`)*
+  Set to `false` to disable email support. *(Defaults to: `true`)*
 * `mail.imapServer` \[string]
   The IMAP server address. *(Defaults to: `localhost`)*
 * `mail.imapPort` \[int]
@@ -123,7 +130,7 @@ At the bare minimum, you need to set values to the following options: *log.dir*,
 * `mail.imapFolderPrefix` \[string]
   Specifies the prefix to prepend to folder names. *(Defaults to: ``)*
 * `mail.imapFolderUsePrefixForInbox` \[boolean]
-  Specified whether to prepend the prefix for INBOX folder. *(Defaults to: `false`)*
+  Specifies whether to prepend the prefix for INBOX folder. *(Defaults to: `false`)*
 * `mail.imapFolderNameInbox` \[string]
   The Inbox folder name (case doesn't matter). *(Defaults to: `INBOX`)*
 * `mail.imapFolderNameSent` \[string]
@@ -144,7 +151,7 @@ At the bare minimum, you need to set values to the following options: *log.dir*,
   The SMTP server port. *(Defaults to: `25`)*
   If you want to use SSL with port 25 or port 465 you must preppend "ssl://" before the hostname or IP of your SMTP server.
 * `mail.smtpNoSSLCertificateCheck` \[boolean]
-  Combined setting to completely disable SSL verifications. Including "verify_peer", "verify_peer_name" and "allow_self_signed". *(Defaults to: `false`)*
+  Combined setting to relax SSL verifications. Including "verify_peer", "verify_peer_name" and "allow_self_signed". *(Defaults to: `false`)*
 * `mail.smtpAuth` \[boolean]
   Specifies whether to enable authentication for SMTP connection. *(Defaults to: `false`)*
 * `mail.smtpUsername` \[string]
@@ -152,15 +159,17 @@ At the bare minimum, you need to set values to the following options: *log.dir*,
 * `mail.smtpPassword` \[string]
   Overrides the internal default to current-user's password (the recommended setup) for any SMTP connection. This should not be changed.
 * `calendar.enabled` \[boolean]
-  False to disable events/appointmens support. *(Defaults to: `true`)*
+  Set to `false` to disable events/appointmens support. *(Defaults to: `true`)*
 * `calendar.apiUrlPath` \[string]
   Path, added to the base, to target the REST endpoint for calendar related calls. This should not be changed. *(Defaults to: `/api/com.sonicle.webtop.calendar/v1`)*
+* `calendar.syncBackMonths` \[int]
+  Number of months of past events to synchronize to devices. The value is applied as a fixed lower bound on the event start date, identical across the initial sync and all following syncs, so the calendar collection stays consistent (a varying window otherwise prevents the sync from converging). Future events are never affected. Set to `0` to disable the limit and synchronize the whole calendar history. *(Defaults to: `1`)*
 * `contacts.enabled` \[boolean]
   False to disable contacts support. *(Defaults to: `true`)*
 * `contacts.apiUrlPath` \[string]
   Path, added to the base, to target the REST endpoint for calendar related calls. This should not be changed. *(Defaults to: `/api/com.sonicle.webtop.contacts/v1`)*
 * `tasks.enabled` \[boolean]
-  False to disable tasks support. *(Defaults to: `true`)*
+  Set to `false` to disable tasks support. *(Defaults to: `true`)*
 * `tasks.apiUrlPath` \[string]
   Path, added to the base, to target the REST endpoint for tasks related calls. This should not be changed. *(Defaults to: `/api/com.sonicle.webtop.tasks/v1`)*
 

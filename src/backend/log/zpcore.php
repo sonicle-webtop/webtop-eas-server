@@ -23,36 +23,22 @@ Class ZPCore extends Log {
      */
 	protected function Write($loglevel, $message) {
 		$logger = $this->getLogger();
-		
-		switch ($loglevel) {
-			case LOGLEVEL_FATAL:
-			case LOGLEVEL_ERROR:
-				if ($logger->isErrorEnabled()) {
-					$logger->error($this->BuildLogString($loglevel, $message));
-				}
-				break;
-			case LOGLEVEL_WARN:
-				if ($logger->isWarnEnabled()) {
-					$logger->warn($this->BuildLogString($loglevel, $message));
-				}
-				break;
-			case LOGLEVEL_INFO:
-				if ($logger->isInfoEnabled()) {
-					$logger->info($this->BuildLogString($loglevel, $message));
-				}
-				break;
-			case LOGLEVEL_DEBUG:
-				if ($logger->isDebugEnabled()) {
-					$logger->debug($this->BuildLogString($loglevel, $message));
-				}
-				break;
-			case LOGLEVEL_WBXML:
-			case LOGLEVEL_DEVICEID:
-			case LOGLEVEL_WBXMLSTACK:
-				if ($logger->isTraceEnabled()) {
-					$logger->trace($this->BuildLogString($loglevel, $message));
-				}
-				break;
+		if ($loglevel & LOGLEVEL_FATAL == LOGLEVEL_FATAL) {
+			$logger->error($this->BuildLogString($loglevel, $message));
+		} else if (($loglevel & LOGLEVEL_ERROR) == LOGLEVEL_ERROR) {
+			$logger->error($this->BuildLogString($loglevel, $message));
+		} else if (($loglevel & LOGLEVEL_WARN) == LOGLEVEL_WARN) {
+			$logger->warn($this->BuildLogString($loglevel, $message));
+		} else if (($loglevel & LOGLEVEL_INFO) == LOGLEVEL_INFO) {
+			$logger->info($this->BuildLogString($loglevel, $message));
+		} else if (($loglevel & LOGLEVEL_DEBUG) == LOGLEVEL_DEBUG) {
+			$logger->debug($this->BuildLogString($loglevel, $message));
+		} else if (($loglevel & LOGLEVEL_WBXML) == LOGLEVEL_WBXML) {
+			$logger->trace($this->BuildLogString($loglevel, $message));
+		} else if (($loglevel & LOGLEVEL_DEVICEID) == LOGLEVEL_DEVICEID) {
+			$logger->trace($this->BuildLogString($loglevel, $message));
+		} else if (($loglevel & LOGLEVEL_WBXMLSTACK) == LOGLEVEL_WBXMLSTACK) {
+			$logger->trace($this->BuildLogString($loglevel, $message));
 		}
 	}
 	

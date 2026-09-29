@@ -7,17 +7,18 @@ namespace Composer\Autoload;
 class ComposerStaticInitb5c69df844eba00a99a848b618335af6
 {
     public static $files = array (
+        '6e3fae29631ef280660b3cdad06f25a8' => __DIR__ . '/..' . '/symfony/deprecation-contracts/function.php',
         '7b11c4dc42b3b3023073cb14e519683c' => __DIR__ . '/..' . '/ralouphie/getallheaders/src/getallheaders.php',
-        '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
         'e69f7f6ee287b969198c3c9d6777bd38' => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer/bootstrap.php',
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
-        '25072dd6e2470089de65ae7bf11d3109' => __DIR__ . '/..' . '/symfony/polyfill-php72/bootstrap.php',
-        'f598d06aa772fa33d905e87be6398fb1' => __DIR__ . '/..' . '/symfony/polyfill-intl-idn/bootstrap.php',
-        'a0edc8309cc5e1d60e3047b5df6b7052' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/functions_include.php',
+        'a4a119a56e50fbb293281d9a48007e0e' => __DIR__ . '/..' . '/symfony/polyfill-php80/bootstrap.php',
         'c964ee0ededf28c96ebd9db5099ef910' => __DIR__ . '/..' . '/guzzlehttp/promises/src/functions_include.php',
+        'a0edc8309cc5e1d60e3047b5df6b7052' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/functions_include.php',
+        '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
+        'f598d06aa772fa33d905e87be6398fb1' => __DIR__ . '/..' . '/symfony/polyfill-intl-idn/bootstrap.php',
         '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
         '21cf0be54ee71e98be5f714fcd408ccf' => __DIR__ . '/../..' . '/package-info.php',
-        '84c4ea78c0b9fa5bfcd59f33faa33d3b' => __DIR__ . '/..' . '/z-push/z-push/src/vendor/autoload.php',
+        'e7adb983d28b7c91adb59199a1b2bb80' => __DIR__ . '/..' . '/z-push/z-push-dev/src/vendor/autoload.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -31,7 +32,7 @@ class ComposerStaticInitb5c69df844eba00a99a848b618335af6
         ),
         'S' => 
         array (
-            'Symfony\\Polyfill\\Php72\\' => 23,
+            'Symfony\\Polyfill\\Php80\\' => 23,
             'Symfony\\Polyfill\\Mbstring\\' => 26,
             'Symfony\\Polyfill\\Intl\\Normalizer\\' => 33,
             'Symfony\\Polyfill\\Intl\\Idn\\' => 26,
@@ -85,9 +86,9 @@ class ComposerStaticInitb5c69df844eba00a99a848b618335af6
         array (
             0 => __DIR__ . '/../..' . '/lib/webtop',
         ),
-        'Symfony\\Polyfill\\Php72\\' => 
+        'Symfony\\Polyfill\\Php80\\' => 
         array (
-            0 => __DIR__ . '/..' . '/symfony/polyfill-php72',
+            0 => __DIR__ . '/..' . '/symfony/polyfill-php80',
         ),
         'Symfony\\Polyfill\\Mbstring\\' => 
         array (
@@ -132,7 +133,6 @@ class ComposerStaticInitb5c69df844eba00a99a848b618335af6
         'Html2Text\\' => 
         array (
             0 => __DIR__ . '/..' . '/html2text/html2text/src',
-            1 => __DIR__ . '/..' . '/html2text/html2text/test',
         ),
         'GuzzleHttp\\Psr7\\' => 
         array (
@@ -153,8 +153,8 @@ class ComposerStaticInitb5c69df844eba00a99a848b618335af6
         array (
             'lf4php' => 
             array (
-                0 => __DIR__ . '/..' . '/lf4php/lf4php/src',
-                1 => __DIR__ . '/..' . '/lf4php/lf4php-monolog/src',
+                0 => __DIR__ . '/..' . '/lf4php/lf4php-monolog/src',
+                1 => __DIR__ . '/..' . '/lf4php/lf4php/src',
             ),
         ),
         'L' => 
@@ -174,10 +174,16 @@ class ComposerStaticInitb5c69df844eba00a99a848b618335af6
     );
 
     public static $classMap = array (
-        'AbstractWebTopBackendDiff' => __DIR__ . '/../..' . '/backend/webtop/AbstractWebTopBackendDiff.php',
+        'AbstractWTBackendDiff' => __DIR__ . '/../..' . '/backend/webtop/AbstractWTBackendDiff.php',
+        'Attribute' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Attribute.php',
         'BackendWebTop' => __DIR__ . '/../..' . '/backend/webtop/webtop.php',
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
         'Normalizer' => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer/Resources/stubs/Normalizer.php',
+        'PhpToken' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/PhpToken.php',
+        'ScopedIpcSharedMemoryProvider' => __DIR__ . '/../..' . '/backend/ipcsharedmemory/scopedipcsharedmemoryprovider.php',
+        'Stringable' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Stringable.php',
+        'UnhandledMatchError' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/UnhandledMatchError.php',
+        'ValueError' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/ValueError.php',
         'ZPCore' => __DIR__ . '/../..' . '/backend/log/zpcore.php',
     );
 

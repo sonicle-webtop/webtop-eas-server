@@ -62,7 +62,8 @@ class ZPUtil {
 	}
 	
 	public static function parseInternetAddress($ia) {
-		$ret = \Mail_RFC822::parseAddressList($ia, 'local', null, null, 1);
+		$parser = new \Mail_RFC822();
+		$ret = $parser->parseAddressList($ia, 'local', null, null, 1);
 		if (($ret === false) || !is_array($ret) || (count($ret) < 1)) {
 			return false;
 		} else {
@@ -139,7 +140,61 @@ class ZPUtil {
 	public static function tzNameToTZBlob($tzName) {
 		$tzId = \TimezoneUtil::GetPhpSupportedTimezone($tzName);
 		$tzObj = \TimezoneUtil::GetFullTZFromTZName($tzId);
-		return base64_encode(\TimezoneUtil::GetSyncBlobFromTZ($tzObj));
+		
+		// GetFullTZFromTZName() already called encodeTZName() internally, storing
+		// a platform-dependent binary string in tzname/tznamedst. We bypass
+		// GetSyncBlobFromTZ() entirely and re-pack the blob ourselves using
+		// correct UTF-16LE encoding for the name fields.
+		$tzName = self::encodeTZNameFixed($tzId);
+		
+		// Pack the MSTZ blob manually instead of delegating to TimezoneUtil::GetSyncBlobFromTZ(),
+		// which internally calls the private encodeTZName() method. That method uses
+		// iconv('UTF-8', 'UTF-16', ...) without explicit endianness, producing platform-dependent
+		// output: UTF-16BE on illumos/Solaris, UTF-16LE on Linux. It also strips the last byte
+		// of the encoded string via substr(..., 2, -1), breaking null termination.
+		// The MS-ASDTYPE MSTZ blob requires 64-byte UTF-16LE name fields with a null terminator.
+		// We use mb_convert_encoding() with explicit 'UTF-16LE' which is deterministic on all platforms.
+		$packed = pack(
+			'la64vvvvvvvv' . 'la64vvvvvvvv' . 'l',
+			$tzObj['bias'],
+			$tzName,
+			0,
+			$tzObj['dstendmonth'], $tzObj['dstendday'], $tzObj['dstendweek'],
+			$tzObj['dstendhour'], $tzObj['dstendminute'], $tzObj['dstendsecond'],
+			$tzObj['dstendmillis'],
+			$tzObj['stdbias'],
+			$tzName,
+			0,
+			$tzObj['dststartmonth'], $tzObj['dststartday'], $tzObj['dststartweek'],
+			$tzObj['dststarthour'], $tzObj['dststartminute'], $tzObj['dststartsecond'],
+			$tzObj['dststartmillis'],
+			$tzObj['dstbias']
+		);
+		
+		return base64_encode($packed);
+	}
+	
+	/**
+	 * Encodes a timezone display name into a 64-byte UTF-16LE field,
+	 * truncated to 31 characters (62 bytes) to ensure a null terminator fits.
+	 * 
+	 * @param string $name UTF-8 timezone name
+	 * @return string 64-byte binary string (UTF-16LE, null-padded)
+	 */
+	private static function encodeTZNameFixed($name) {
+		// Truncate to 31 chars max to leave room for the UTF-16LE null terminator (2 bytes).
+		// The MSTZ blob name field is 64 bytes = 32 UTF-16LE chars.
+		$name = mb_substr($name, 0, 31, 'UTF-8');
+		
+		// mb_convert_encoding with explicit 'UTF-16LE' is platform-independent,
+		// unlike iconv('UTF-8', 'UTF-16', ...) which produces platform-dependent
+		// endianness and a BOM — on illumos/Solaris iconv outputs UTF-16BE,
+		// on Linux it typically outputs UTF-16LE. Both break the MS-ASDTYPE spec.
+		$encoded = mb_convert_encoding($name, 'UTF-16LE', 'UTF-8');
+		
+		// Pad to exactly 64 bytes; str_pad fills with null bytes which serve
+		// as the required UTF-16LE null terminator.
+		return str_pad(substr($encoded, 0, 62), 64, "\x00");
 	}
 	
 	/**

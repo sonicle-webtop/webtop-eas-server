@@ -1,0 +1,10 @@
+
+zpush.config.php
+----------------
+Copy of the original configuration file (located at ZPUSH_SRC_DIR/config.php) 
+customized using parameters from our unified configuration file.
+
+autodiscover.config.php
+-----------------------
+Copy of the original configuration file (located at ZPUSH_SRC_DIR/autodiscover/config.php) 
+customized using parameters from our unified configuration file.
