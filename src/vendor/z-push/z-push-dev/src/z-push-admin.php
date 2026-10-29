@@ -1491,7 +1491,7 @@ class ZPushAdminCLI {
                         if (strlen($d['name']) > 20) {
                             $d['name'] = substr($d['name'], 0, 18) . "..";
                         }
-                        printf("\tFolder: %s Sync: %s %s\n", str_pad($d['name'], 20), str_pad($d['status'], 13), $status);
+                        fwrite(STDOUT, sprintf("\tFolder: %s Sync: %s %s\n", str_pad($d['name'], 20), str_pad($d['status'], 13), $status));
                     }
                 }
             }

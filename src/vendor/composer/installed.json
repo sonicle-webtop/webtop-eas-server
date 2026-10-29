@@ -1567,17 +1567,17 @@
         },
         {
             "name": "z-push/z-push-dev",
-            "version": "2.7.6",
-            "version_normalized": "2.7.6.0",
+            "version": "2.7.7",
+            "version_normalized": "2.7.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Z-Hub/Z-Push.git",
-                "reference": "a8b52d80dbe8e084faf7c0b58daf581f0d2b5306"
+                "reference": "c5c8bdde144e70c86fafe6eef9a1c4e6b6d382dc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Z-Hub/Z-Push/zipball/a8b52d80dbe8e084faf7c0b58daf581f0d2b5306",
-                "reference": "a8b52d80dbe8e084faf7c0b58daf581f0d2b5306",
+                "url": "https://api.github.com/repos/Z-Hub/Z-Push/zipball/c5c8bdde144e70c86fafe6eef9a1c4e6b6d382dc",
+                "reference": "c5c8bdde144e70c86fafe6eef9a1c4e6b6d382dc",
                 "shasum": ""
             },
             "require": {
@@ -1594,7 +1594,7 @@
             "homepage": "http://z-push.org/",
             "support": {
                 "issues": "https://github.com/Z-Hub/Z-Push/issues",
-                "source": "https://github.com/Z-Hub/Z-Push/tree/2.7.6"
+                "source": "https://github.com/Z-Hub/Z-Push/tree/2.7.7"
             },
             "install-path": "../z-push/z-push-dev"
         }

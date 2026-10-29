@@ -1496,6 +1496,36 @@ class Utils {
         return datefmt_format($dateFormatUtc, $ts);
     }
 
+    /**
+     * Encodes a single URL path segment.
+     *
+     * @param string $value
+     *
+     * @access public
+     * @return string
+     *
+     * @psalm-taint-escape ssrf
+     * @psalm-taint-escape file
+     */
+    public static function urlEncodePathSegment($value) {
+        $encodedvalue = rawurlencode($value);
+        $encodedvalue = str_replace('%40', '@', $encodedvalue);
+        return $encodedvalue;
+    }
+
+    /**
+     * returns true for loopback (localhost)
+     *
+     * @param string $host
+     *
+     * @access public
+     * @return boolean
+     *
+     */
+    public static function IsLoopbackHost($host) {
+        return ($host === 'localhost' || $host === '127.0.0.1' || $host === '[::1]');
+    }
+
 }
 
 // TODO Win1252/UTF8 functions are deprecated and will be removed sometime

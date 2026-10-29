@@ -13,7 +13,7 @@
 	"optimize-autoloader": true,	
     "require": {
 		"php": ">=7.4.0",
-		"z-push/z-push-dev": "2.7.6",
+		"z-push/z-push-dev": "2.7.7",
 		"hassankhan/config": "^3.2",
 		"symfony/yaml": "~5.4",
 		"lf4php/lf4php": "^5.0.0",

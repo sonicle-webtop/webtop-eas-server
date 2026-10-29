@@ -441,6 +441,11 @@ class ZPush {
             }
         }
 
+        // Check DAV SSL Verify option
+        if (!defined('DAV_SSL_VERIFY')) {
+            define('DAV_SSL_VERIFY', DAV_SSL_VERIFY_AUTO);
+        }
+                        
         ZLog::Write(LOGLEVEL_DEBUG, sprintf("Used timezone '%s'", date_default_timezone_get()));
 
         // get the statemachine, which will also try to load the backend.. This could throw errors
@@ -808,10 +813,16 @@ class ZPush {
     static public function PrintZPushLegal($message = "", $additionalMessage = "") {
         ZLog::Write(LOGLEVEL_DEBUG,"ZPush::PrintZPushLegal()");
 
+        $message = htmlspecialchars($message, ENT_QUOTES);
+        $additionalMessage = htmlspecialchars($additionalMessage, ENT_QUOTES);
+
         if ($message)
             $message = "<h3>". $message . "</h3>";
-        if ($additionalMessage)
-            $additionalMessage .= "<br>";
+        if ($additionalMessage) {
+            $additionalMessage = $additionalMessage . "<br>";
+            $additionalMessage = str_replace("&lt;pre&gt;", "<pre>", $additionalMessage);
+            $additionalMessage = str_replace("&lt;/pre&gt;", "</pre>", $additionalMessage);
+        }
 
         header("Content-type: text/html");
         print <<<END

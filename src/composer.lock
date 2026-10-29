@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8692c7ffdd55eb27fd6c5144514eeaa9",
+    "content-hash": "62a5d50207de77a1ad50c1cfd2078f14",
     "packages": [
         {
             "name": "data-uri/data-uri",
@@ -1515,16 +1515,16 @@
         },
         {
             "name": "z-push/z-push-dev",
-            "version": "2.7.6",
+            "version": "2.7.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Z-Hub/Z-Push.git",
-                "reference": "a8b52d80dbe8e084faf7c0b58daf581f0d2b5306"
+                "reference": "c5c8bdde144e70c86fafe6eef9a1c4e6b6d382dc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Z-Hub/Z-Push/zipball/a8b52d80dbe8e084faf7c0b58daf581f0d2b5306",
-                "reference": "a8b52d80dbe8e084faf7c0b58daf581f0d2b5306",
+                "url": "https://api.github.com/repos/Z-Hub/Z-Push/zipball/c5c8bdde144e70c86fafe6eef9a1c4e6b6d382dc",
+                "reference": "c5c8bdde144e70c86fafe6eef9a1c4e6b6d382dc",
                 "shasum": ""
             },
             "require": {
@@ -1539,7 +1539,7 @@
             "homepage": "http://z-push.org/",
             "support": {
                 "issues": "https://github.com/Z-Hub/Z-Push/issues",
-                "source": "https://github.com/Z-Hub/Z-Push/tree/2.7.6"
+                "source": "https://github.com/Z-Hub/Z-Push/tree/2.7.7"
             },
             "time": "2015-09-02T00:00:00+00:00"
         }
