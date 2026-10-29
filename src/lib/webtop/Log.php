@@ -8,7 +8,10 @@ use Monolog\Logger;
  * Inspired by: https://gist.github.com/laverboy/fd0a32e9e4e9fbbf9584
  */
 class Log {
-	
+
+	// Above Monolog's highest level (EMERGENCY = 600): no record reaches it
+	const LEVEL_OFF = 1000;
+
 	protected static $level;
 	protected static $instance;
 	
@@ -39,6 +42,8 @@ class Log {
 	
 	/**
 	 * Returns the corresponding level value in Monolog "language".
+	 * Monolog has no TRACE, WARN and OFF: TRACE is mapped to DEBUG, WARN to
+	 * WARNING and OFF to a level above EMERGENCY, so that nothing is logged.
 	 * @param string $level Our loggin level. One of: ERROR, WARN, INFO, DEBUG, TRACE, OFF
 	 * @param int $defaultMonologLevel The default level to return in case of missing match.
 	 * @return int
@@ -48,6 +53,10 @@ class Log {
 			$mlevel = $level;
 			if ('TRACE' == $level) {
 				$mlevel = 'DEBUG';
+			} else if ('WARN' == $level) {
+				$mlevel = 'WARNING';
+			} else if ('OFF' == $level) {
+				return self::LEVEL_OFF;
 			}
 			$ret = Logger::toMonologLevel($mlevel);
 			if (is_int($ret)) {
