@@ -87,7 +87,7 @@ class BackendWTContacts extends AbstractWTBackendDiff {
 			$items = $api->getFolders();
 			$map = [];
 			for ($i = 0; $i < count($items); $i++) {
-				if ($logger->isDebugEnabled()) $logger->debug('[REST] ... [{}]'.PHP_EOL.'{}', [$i, $items[$i]]);
+				if ($logger->isTraceEnabled()) $logger->trace('[REST] ... [{}]'.PHP_EOL.'{}', [$i, $items[$i]]);
 				$map[$items[$i]->getId()] = $items[$i];
 			}
 			return $map;
@@ -109,7 +109,7 @@ class BackendWTContacts extends AbstractWTBackendDiff {
 			$map = [];
 			$logger->debug('Returned {} items', [count($items)]);
 			for ($i = 0; $i < count($items); $i++) {
-				if ($logger->isDebugEnabled()) $logger->debug('[REST] ... [{}]'.PHP_EOL.'{}', [$i, $items[$i]]);
+				if ($logger->isTraceEnabled()) $logger->trace('[REST] ... [{}]'.PHP_EOL.'{}', [$i, $items[$i]]);
 				$map[$items[$i]->getId()] = $items[$i];
 			}
 			return $map;
@@ -130,7 +130,7 @@ class BackendWTContacts extends AbstractWTBackendDiff {
 			$api = new \WT\Client\Contacts\Api\EasApi(null, $this->getContactsApiConfig());
 			$logger->debug('[REST] --> getMessage({}, {})', [$foId, $id]);
 			$item = $api->getMessage($foId, $id);
-			if ($logger->isDebugEnabled()) $logger->debug('[REST] ...'.PHP_EOL.'{}', [$item]);
+			if ($logger->isTraceEnabled()) $logger->trace('[REST] ...'.PHP_EOL.'{}', [$item]);
 			
 			return is_null($item) ? false : $this->toZPSyncContact($item, $truncsize);
 
@@ -170,7 +170,7 @@ class BackendWTContacts extends AbstractWTBackendDiff {
 				$logger->debug('[REST] --> updateMessage({}, {})', [$foId, $id]);
 				$stat = $api->updateMessage($body, $foId, $id);
 			}
-			if ($logger->isDebugEnabled()) $logger->debug('[REST] ...'.PHP_EOL.'{}', [$stat]);
+			if ($logger->isTraceEnabled()) $logger->trace('[REST] ...'.PHP_EOL.'{}', [$stat]);
 			$this->updateApiSyncFolderMessage($foId, $id, $stat); // Update cached stat info!
 			
 			return $this->toZPStatMessage($stat);
@@ -270,10 +270,10 @@ class BackendWTContacts extends AbstractWTBackendDiff {
 					break;
 				case 'picture':
 					if (!empty($item->offsetGet($wtName))) {
-						if ($logger->isDebugEnabled()) $logger->debug('Unpacking picture Data URI...');
+						if ($logger->isTraceEnabled()) $logger->trace('Unpacking picture Data URI...');
 						$pic = ZPUtil::dataUriToPicture(DataURI\Parser::parse($item->offsetGet($wtName)));
 						if (!is_null($pic)) {
-							if ($logger->isDebugEnabled()) $logger->debug('Unpacked: {} - {} bytes', [$pic['mediaType'], strlen($pic['data'])]);
+							if ($logger->isTraceEnabled()) $logger->trace('Unpacked: {} - {} bytes', [$pic['mediaType'], strlen($pic['data'])]);
 							//https://github.com/b1gMail/zpush-b1gmail/blob/zpush-22/b1gmail.php#L1597
 							//if (strlen($pic['data']) <= 49152) { // Do not attach too big images to avoid Z-Push dropping the entire contact
 								$obj->$zpName = $pic['data'];
@@ -313,11 +313,11 @@ class BackendWTContacts extends AbstractWTBackendDiff {
 				case 'picture':
 					$pic = null;
 					if (!empty($item->$zpName)) {
-						if ($logger->isDebugEnabled()) $logger->debug('Packing picture into Data URI...');
+						if ($logger->isTraceEnabled()) $logger->trace('Packing picture into Data URI...');
 						//https://github.com/b1gMail/zpush-b1gmail/blob/zpush-22/b1gmail.php#L1998
 						$dataUri = ZPUtil::pictureToDataUri($item->$zpName);
 						if (!is_null($dataUri)) {
-							if ($logger->isDebugEnabled()) $logger->debug('Packed: {} - {} bytes', [$dataUri->getMimeType(), strlen($dataUri->getData())]);
+							if ($logger->isTraceEnabled()) $logger->trace('Packed: {} - {} bytes', [$dataUri->getMimeType(), strlen($dataUri->getData())]);
 							$pic = DataURI\Dumper::dump($dataUri);
 						}
 					}

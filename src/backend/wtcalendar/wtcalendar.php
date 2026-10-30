@@ -47,7 +47,7 @@ class BackendWTCalendar extends AbstractWTBackendDiff {
 			$items = $api->getFolders();
 			$map = [];
 			for ($i = 0; $i < count($items); $i++) {
-				if ($logger->isDebugEnabled()) $logger->debug('[REST] ... [{}]'.PHP_EOL.'{}', [$i, $items[$i]]);
+				if ($logger->isTraceEnabled()) $logger->trace('[REST] ... [{}]'.PHP_EOL.'{}', [$i, $items[$i]]);
 				$map[$items[$i]->getId()] = $items[$i];
 			}
 			return $map;
@@ -69,7 +69,7 @@ class BackendWTCalendar extends AbstractWTBackendDiff {
 			$map = [];
 			$logger->debug('Returned {} items', [count($items)]);
 			for ($i = 0; $i < count($items); $i++) {
-				if ($logger->isDebugEnabled()) $logger->debug('[REST] ... [{}]'.PHP_EOL.'{}', [$i, $items[$i]]);
+				if ($logger->isTraceEnabled()) $logger->trace('[REST] ... [{}]'.PHP_EOL.'{}', [$i, $items[$i]]);
 				$map[$items[$i]->getId()] = $items[$i];
 			}
 			return $map;
@@ -92,7 +92,7 @@ class BackendWTCalendar extends AbstractWTBackendDiff {
 			$api = new \WT\Client\Calendar\Api\EasApi(null, $this->getCalendarApiConfig());
 			$logger->debug('[REST] --> getMessage({}, {})', [$foId, $id]);
 			$item = $api->getMessage($foId, $id);
-			if ($logger->isDebugEnabled()) $logger->debug('[REST] ...'.PHP_EOL.'{}', [$item]);
+			if ($logger->isTraceEnabled()) $logger->trace('[REST] ...'.PHP_EOL.'{}', [$item]);
 			
 			return is_null($item) ? false : $this->toZPSyncAppointment($item, $truncsize);
 
@@ -127,7 +127,7 @@ class BackendWTCalendar extends AbstractWTBackendDiff {
 				$body = $this->toApiSyncEventUpdate($this->toApiSyncEventData($message)); // New messages do not have event (broken) exceptions
 				$logger->debug('[REST] --> addMessage({})', [$foId]);
 				$stat = $api->addMessage($body, $foId);
-				if ($logger->isDebugEnabled()) $logger->debug('[REST] ...'.PHP_EOL.'{}', [$stat]);
+				if ($logger->isTraceEnabled()) $logger->trace('[REST] ...'.PHP_EOL.'{}', [$stat]);
 				$this->updateApiSyncFolderMessage($foId, $id, $stat); // Update cached stat info!
 				
 				return $this->toZPStatMessage($stat);
@@ -138,7 +138,7 @@ class BackendWTCalendar extends AbstractWTBackendDiff {
 				$logger->debug('[REST] --> updateMessage({}, {})', [$foId, $id]);
 				$stats = $api->updateMessage($body, $foId, $id);
 				for ($i = 0; $i < count($stats); $i++) {
-					if ($logger->isDebugEnabled()) $logger->debug('[REST] ... [{}]'.PHP_EOL.'{}', [$i, $stats[$i]]);
+					if ($logger->isTraceEnabled()) $logger->trace('[REST] ... [{}]'.PHP_EOL.'{}', [$i, $stats[$i]]);
 					$this->updateApiSyncFolderMessage($foId, $stats[$i]->getId(), $stats[$i]); // Update cached stat info!
 				}
 				
@@ -379,7 +379,7 @@ class BackendWTCalendar extends AbstractWTBackendDiff {
 				$exDates = [];
 				foreach ($sync->exceptions as $exception) { // Adds every exception as excluded date
 					$exDate = ZPUtil::toISODate($exception->exceptionstarttime);
-					$logger->debug("Adding exception as excluded date [{}, {}]", [$exDate, (!$exception->deleted ? "broken" : "deleted")]);
+					$logger->trace("Adding exception as excluded date [{}, {}]", [$exDate, (!$exception->deleted ? "broken" : "deleted")]);
 					$exDates[] = $exDate;
 				}
 				$obj->setExDates($exDates);
@@ -470,18 +470,18 @@ class BackendWTCalendar extends AbstractWTBackendDiff {
 		$obj = new \WT\Client\Calendar\Model\EasSyncEventDataAttendee();
 		
 		if (isset($sync->email)) {
-			$logger->debug("email: [{}]", [$sync->email]);
-			$logger->debug("name: [{}]", [$sync->name]);
+			$logger->trace("email: [{}]", [$sync->email]);
+			$logger->trace("name: [{}]", [$sync->name]);
 			$obj->setAddress(ZPUtil::toInternetAddress($sync->email, $sync->name));
 		}
 		if (isset($sync->attendeetype)) {
-			$logger->debug("attendeetype: [{}]", [$sync->attendeetype]);
+			$logger->trace("attendeetype: [{}]", [$sync->attendeetype]);
 			$ret = $this->toApiSyncEventDataAttendeeType($sync->attendeetype);
 			$obj->setType($ret['type']);
 			$obj->setRole($ret['role']);
 		}
 		if (isset($sync->attendeestatus)) {
-			$logger->debug("attendeestatus: [{}]", [$sync->attendeestatus]);
+			$logger->trace("attendeestatus: [{}]", [$sync->attendeestatus]);
 			$obj->setStatus($this->toApiSyncEventDataAttendeeStatus($sync->attendeestatus));
 		}
 		

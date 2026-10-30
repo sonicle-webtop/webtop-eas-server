@@ -56,7 +56,7 @@ abstract class AbstractWTBackendDiff extends BackendDiff {
 			if (!is_null($folder)) {
 				$entry = $this->buildLegacyFolderIdCacheEntry($folder);
 				if (!is_null($entry)) {
-					if ($logger->isDebugEnabled()) $logger->trace('{} -> {}', [$id, $entry['key']]);
+					if ($logger->isTraceEnabled()) $logger->trace('{} -> {}', [$id, $entry['key']]);
 					return $entry['key'];
 				}
 			}
@@ -92,7 +92,7 @@ abstract class AbstractWTBackendDiff extends BackendDiff {
 			}
 			
 			if (array_key_exists($id, $this->legacyFolderIdsCache)) {
-				if ($logger->isDebugEnabled()) $logger->trace('{} -> {}', [$id, $this->legacyFolderIdsCache[$id]]);
+				if ($logger->isTraceEnabled()) $logger->trace('{} -> {}', [$id, $this->legacyFolderIdsCache[$id]]);
 				return $this->legacyFolderIdsCache[$id];
 			} else {
 				throw new FatalException(sprintf("AbstractWebTopBackendDiff(): Unable to decode folder '%s'", $id), 0, null, LOGLEVEL_FATAL);
@@ -149,7 +149,7 @@ abstract class AbstractWTBackendDiff extends BackendDiff {
 			if ($item->getEvalPermRefs()[0] === true) {
 				return true;
 			} else {
-				$logger->trace('Required permission not satisfied [{}, {}]', [$username, self::PERMREF_DEVICES_SYNC]);
+				$logger->info('Required permission not satisfied [{}, {}]', [$username, self::PERMREF_DEVICES_SYNC]);
 				return false;
 			}
 			
@@ -262,7 +262,7 @@ abstract class AbstractWTBackendDiff extends BackendDiff {
 
 	public function ChangesSink($timeout = 30) {
 		$logger = $this->getLogger();
-		if ($logger->isDebugEnabled()) $logger->debug('{}({})', [__METHOD__, $timeout]);
+		if ($logger->isTraceEnabled()) $logger->trace('{}({})', [__METHOD__, $timeout]);
 
 		$notifications = [];
 		if (empty($this->sinkFolders)) return $notifications;
@@ -274,11 +274,15 @@ abstract class AbstractWTBackendDiff extends BackendDiff {
 			$notifications = $this->checkSinkFoldersChanges();
 			if (!empty($notifications) || (time() >= $stopat)) break;
 			$sleepTime = min($stopat - time(), 30);
-			if ($logger->isDebugEnabled()) $logger->debug('({}) no changes, going to sleep ({})', [$timeout, $sleepTime]);
+			if ($logger->isTraceEnabled()) $logger->trace('({}) no changes, going to sleep ({})', [$timeout, $sleepTime]);
 			sleep($sleepTime);
 		}
 
-		if ($logger->isDebugEnabled()) $logger->debug('({}) returning notifications: [{}]', [$timeout, implode(' ', $notifications)]);
+		if (!empty($notifications)) {
+			$logger->debug('({}) returning notifications: [{}]', [$timeout, implode(' ', $notifications)]);
+		} else if ($logger->isTraceEnabled()) {
+			$logger->trace('({}) no notifications', [$timeout]);
+		}
 		return $notifications;
 	}
 
@@ -454,7 +458,7 @@ abstract class AbstractWTBackendDiff extends BackendDiff {
 		if (array_key_exists($id, $folderMessages)) {
 			return $folderMessages[$id];
 		} else {
-			$logger->debug('Message not found in cache [{}, {}]', [$folderId, $id]);
+			$logger->trace('Message not found in cache [{}, {}]', [$folderId, $id]);
 			return null;
 		}
 	}
@@ -465,11 +469,11 @@ abstract class AbstractWTBackendDiff extends BackendDiff {
 		if (array_key_exists($folderId, $this->folderMessagesCache)) {
 			if (is_null($stat)) {
 				if (array_key_exists($id, $this->folderMessagesCache[$folderId])) {
-					$logger->debug('Deleting message from cache [{}, {}]', [$folderId, $id]);
+					$logger->trace('Deleting message from cache [{}, {}]', [$folderId, $id]);
 					unset($this->folderMessagesCache[$folderId][$id]);
 				}
 			} else {
-				$logger->debug('Inserting/Updating message in cache [{}, {}]', [$folderId, $id]);
+				$logger->trace('Inserting/Updating message in cache [{}, {}]', [$folderId, $id]);
 				$this->folderMessagesCache[$folderId][$id] = $stat;
 			}	
 		}

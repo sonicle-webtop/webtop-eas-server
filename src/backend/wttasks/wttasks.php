@@ -33,7 +33,7 @@ class BackendWTTasks extends AbstractWTBackendDiff {
 			$items = $api->getFolders();
 			$map = [];
 			for ($i = 0; $i < count($items); $i++) {
-				if ($logger->isDebugEnabled()) $logger->debug('[REST] ... [{}]'.PHP_EOL.'{}', [$i, $items[$i]]);
+				if ($logger->isTraceEnabled()) $logger->trace('[REST] ... [{}]'.PHP_EOL.'{}', [$i, $items[$i]]);
 				$map[$items[$i]->getId()] = $items[$i];
 			}
 			return $map;
@@ -55,7 +55,7 @@ class BackendWTTasks extends AbstractWTBackendDiff {
 			$map = [];
 			$logger->debug('Returned {} items', [count($items)]);
 			for ($i = 0; $i < count($items); $i++) {
-				if ($logger->isDebugEnabled()) $logger->debug('[REST] ... [{}]'.PHP_EOL.'{}', [$i, $items[$i]]);
+				if ($logger->isTraceEnabled()) $logger->trace('[REST] ... [{}]'.PHP_EOL.'{}', [$i, $items[$i]]);
 				$map[$items[$i]->getId()] = $items[$i];
 			}
 			return $map;
@@ -78,7 +78,7 @@ class BackendWTTasks extends AbstractWTBackendDiff {
 			$api = new \WT\Client\Tasks\Api\EasApi(null, $this->getTasksApiConfig());
 			$logger->debug('[REST] --> getMessage({}, {})', [$foId, $id]);
 			$item = $api->getMessage($foId, $id);
-			if ($logger->isDebugEnabled()) $logger->debug('[REST] ...'.PHP_EOL.'{}', [$item]);
+			if ($logger->isTraceEnabled()) $logger->trace('[REST] ...'.PHP_EOL.'{}', [$item]);
 			
 			return is_null($item) ? false : $this->toZPSyncTask($item, $truncsize);
 
@@ -118,7 +118,7 @@ class BackendWTTasks extends AbstractWTBackendDiff {
 				$logger->debug('[REST] --> updateMessage({}, {})', [$foId, $id]);
 				$stat = $api->updateMessage($body, $foId, $id);
 			}
-			if ($logger->isDebugEnabled()) $logger->debug('[REST] ...'.PHP_EOL.'{}', [$stat]);
+			if ($logger->isTraceEnabled()) $logger->trace('[REST] ...'.PHP_EOL.'{}', [$stat]);
 			$this->updateApiSyncFolderMessage($foId, $id, $stat); // Update cached stat info!
 			
 			return $this->toZPStatMessage($stat);
