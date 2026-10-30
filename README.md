@@ -16,7 +16,7 @@ This backend is built on top of [Z-Push](http://z-push.org/), so you need to so 
 Then, summing:
 
 * PHP >= 8.1 (with pdo, php-imap, php-mbstring, php-intl extensions installed)
-* Apache with mod_php
+* Apache with mod_php or php-fpm
 * WebTop instance supporting EAS REST API (core >= v.5.6.0, calendar >= v.5.21.0, contacts >= v.5.18.0, tasks >= v.5.15.0)
 
 ## Installation
