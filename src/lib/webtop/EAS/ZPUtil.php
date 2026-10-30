@@ -422,7 +422,7 @@ class ZPUtil {
 	
 	
 	
-	public static function messageBodyToNote(\SyncBaseBody $body = null) {
+	public static function messageBodyToNote(?\SyncBaseBody $body = null) {
 		if (isset($body) && isset($body->data)) {
 			$ret = stream_get_contents($body->data);
 			if ($ret !== false) {

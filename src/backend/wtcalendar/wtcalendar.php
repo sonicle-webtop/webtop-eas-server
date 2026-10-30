@@ -267,7 +267,7 @@ class BackendWTCalendar extends AbstractWTBackendDiff {
 			}
 		}
 		
-		$obj->meetingstatus = (count($item->getAttendees()) < 1) ? 0 : 1;
+		$obj->meetingstatus = empty($item->getAttendees()) ? 0 : 1;
 		
 		$atts = $item->getAttendees();
 		if (!empty($atts)) {

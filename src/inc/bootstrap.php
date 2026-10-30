@@ -18,6 +18,9 @@ if (empty($BOOTSTRAP_TARGET_SCRIPT)) {
 $BASE = dirname(__DIR__);
 $ZPUSH_SRC = \WT\EAS\Config::get()->getZPushSrc();
 set_include_path(get_include_path() . PATH_SEPARATOR . WT_EAS_ROOT . $ZPUSH_SRC);
+// Files that Z-Push includes through the include path and that WebTop replaces
+// (see inc/zpush-overrides): this folder must come first, before '.'
+set_include_path(WT_EAS_ROOT . '/inc/zpush-overrides' . PATH_SEPARATOR . get_include_path());
 
 $BOOTSTRAP_TARGET_FOLDER = dirname($BOOTSTRAP_TARGET_SCRIPT) == '.' ? '' : dirname($BOOTSTRAP_TARGET_SCRIPT);
 $BOOTSTRAP_TARGET_SCRIPT = basename($BOOTSTRAP_TARGET_SCRIPT);
