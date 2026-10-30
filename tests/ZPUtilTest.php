@@ -8,7 +8,9 @@ use WT\Tests\Support\EasTestCase;
 
 /**
  * Conversions between WebTop values and ActiveSync ones. Recurrence values
- * follow MS-ASCAL (Type, DayOfWeek, WeekOfMonth: 5 means the last week).
+ * follow MS-ASCAL (Type, DayOfWeek, WeekOfMonth: 5 means the last week); the
+ * nth weekday is written as WebTop does (BYSETPOS=-1;BYDAY=MO), since its
+ * recurrence editor recognizes only that form.
  */
 class ZPUtilTest extends EasTestCase {
 
@@ -67,9 +69,42 @@ class ZPUtilTest extends EasTestCase {
 
 	public function testUtcBlob() {
 		// What a phone sends for UTC: no bias, no daylight saving
-		$blob = base64_encode(pack('la64vvvvvvvvla64vvvvvvvvl', 0, '', 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 0, 0, 0, 0, 0, 0, 0));
+		$blob = self::blob(0, '', [0, 0, 0, 0], 0, [0, 0, 0, 0]);
 
 		$this->assertSameOffsets('UTC', ZPUtil::tzBlobToTZName($blob, 'Europe/Rome'));
+	}
+
+	public function testZoneNameWrittenInTheBlobIsPreferred() {
+		// We write the zone ID in the blob: when the phone sends it back, it wins over equivalent zones
+		$blob = ZPUtil::tzNameToTZBlob('Europe/London');
+
+		$this->assertSame('Europe/London', ZPUtil::tzBlobToTZName($blob, 'Europe/Rome'));
+	}
+
+	public function testBlobWithWindowsNameAndEuropeanRules() {
+		// As Windows phones send it: Windows name, daylight saving from the last Sunday of
+		// March at 2:00 to the last Sunday of October at 3:00
+		$blob = self::blob(-60, 'W. Europe Standard Time', [10, 0, 5, 3], -60, [3, 0, 5, 2]);
+
+		$this->assertSameOffsets('Europe/Rome', ZPUtil::tzBlobToTZName($blob, 'America/New_York'));
+	}
+
+	public function testBlobOfZoneThatDroppedDaylightSaving() {
+		// Mexico City has no daylight saving time since 2022, while Z-Push's table still has it
+		$blob = self::blob(360, '', [0, 0, 0, 0], 0, [0, 0, 0, 0]);
+
+		$this->assertSameOffsets('America/Mexico_City', ZPUtil::tzBlobToTZName($blob, 'Europe/Rome'));
+	}
+
+	/**
+	 * Packs a MS-ASDTYPE TimeZone blob; changes are [month, day of week, week of month, hour].
+	 */
+	private static function blob($bias, $name, array $toStd, $dstBias, array $toDst) {
+		$name = str_pad(mb_convert_encoding($name, 'UTF-16LE', 'UTF-8'), 64, "\0");
+		return base64_encode(pack('la64vvvvvvvvla64vvvvvvvvl',
+			$bias, $name, 0, $toStd[0], $toStd[1], $toStd[2], $toStd[3], 0, 0, 0,
+			0, $name, 0, $toDst[0], $toDst[1], $toDst[2], $toDst[3], 0, 0, 0,
+			$dstBias));
 	}
 
 	/**
@@ -98,9 +133,14 @@ class ZPUtilTest extends EasTestCase {
 			'monthly on day' => ['FREQ=MONTHLY;BYMONTHDAY=15', ['type' => 2, 'dayofmonth' => 15]],
 			'monthly on nth day' => ['FREQ=MONTHLY;BYDAY=2TU', ['type' => 3, 'weekofmonth' => 2, 'dayofweek' => 4]],
 			'monthly on last day' => ['FREQ=MONTHLY;BYDAY=-1FR', ['type' => 3, 'weekofmonth' => 5, 'dayofweek' => 32]],
+			// As WebTop writes them
+			'monthly on last day by position' => ['FREQ=MONTHLY;BYSETPOS=-1;BYDAY=MO', ['type' => 3, 'weekofmonth' => 5, 'dayofweek' => 2]],
+			'monthly on last weekday' => ['FREQ=MONTHLY;BYSETPOS=-1;BYDAY=MO,TU,WE,TH,FR', ['type' => 3, 'weekofmonth' => 5, 'dayofweek' => 62]],
+			'yearly on nth day by position' => ['FREQ=YEARLY;BYSETPOS=2;BYDAY=SU;BYMONTH=5', ['type' => 6, 'monthofyear' => 5, 'weekofmonth' => 2, 'dayofweek' => 1]],
 			'yearly on date' => ['FREQ=YEARLY;BYMONTH=3;BYMONTHDAY=8', ['type' => 5, 'monthofyear' => 3, 'dayofmonth' => 8]],
 			'yearly on nth day' => ['FREQ=YEARLY;BYMONTH=11;BYDAY=4TH', ['type' => 6, 'monthofyear' => 11, 'weekofmonth' => 4, 'dayofweek' => 16]],
 			'yearly on last day' => ['FREQ=YEARLY;BYMONTH=5;BYDAY=-1MO', ['type' => 6, 'monthofyear' => 5, 'weekofmonth' => 5, 'dayofweek' => 2]],
+			'parts in any order' => ['BYDAY=-1MO;BYMONTH=5;FREQ=YEARLY', ['type' => 6, 'monthofyear' => 5, 'weekofmonth' => 5, 'dayofweek' => 2]],
 		];
 	}
 
@@ -125,10 +165,12 @@ class ZPUtilTest extends EasTestCase {
 			'daily' => [['type' => '0', 'interval' => '2', 'occurrences' => '5'], 'FREQ=DAILY;COUNT=5;INTERVAL=2'],
 			'weekly' => [['type' => '1', 'dayofweek' => '42'], 'FREQ=WEEKLY;BYDAY=MO,WE,FR'],
 			'monthly on day' => [['type' => '2', 'dayofmonth' => '15'], 'FREQ=MONTHLY;BYMONTHDAY=15'],
-			'monthly on nth day' => [['type' => '3', 'weekofmonth' => '2', 'dayofweek' => '4'], 'FREQ=MONTHLY;BYDAY=2TU'],
-			'monthly on last day' => [['type' => '3', 'weekofmonth' => '5', 'dayofweek' => '32'], 'FREQ=MONTHLY;BYDAY=-1FR'],
+			'monthly on nth day' => [['type' => '3', 'weekofmonth' => '2', 'dayofweek' => '4'], 'FREQ=MONTHLY;BYSETPOS=2;BYDAY=TU'],
+			'monthly on last day' => [['type' => '3', 'weekofmonth' => '5', 'dayofweek' => '32'], 'FREQ=MONTHLY;BYSETPOS=-1;BYDAY=FR'],
+			'monthly on last weekday' => [['type' => '3', 'weekofmonth' => '5', 'dayofweek' => '62'], 'FREQ=MONTHLY;BYSETPOS=-1;BYDAY=MO,TU,WE,TH,FR'],
 			'yearly on date' => [['type' => '5', 'monthofyear' => '3', 'dayofmonth' => '8'], 'FREQ=YEARLY;BYMONTHDAY=8;BYMONTH=3'],
-			'yearly on nth day' => [['type' => '6', 'monthofyear' => '11', 'weekofmonth' => '4', 'dayofweek' => '16'], 'FREQ=YEARLY;BYDAY=4TH;BYMONTH=11'],
+			'yearly on nth day' => [['type' => '6', 'monthofyear' => '11', 'weekofmonth' => '4', 'dayofweek' => '16'], 'FREQ=YEARLY;BYSETPOS=4;BYDAY=TH;BYMONTH=11'],
+			'yearly on last day' => [['type' => '6', 'monthofyear' => '5', 'weekofmonth' => '5', 'dayofweek' => '2'], 'FREQ=YEARLY;BYSETPOS=-1;BYDAY=MO;BYMONTH=5'],
 		];
 	}
 

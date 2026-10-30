@@ -133,19 +133,31 @@ class CalendarTest extends EasTestCase {
 		$this->assertSame(['20260808'], $stored['exDates']);
 	}
 
-	public function testCreateEventWithAttendeeTypeAndStatus() {
-		// Optional attendee who accepted, as the phone sends them (no address, to stay off ext-imap)
+	public static function attendeeTypesAndStatuses() {
+		// ActiveSync type and status => WebTop type, role, status
+		return [
+			'required, unknown' => ['1', '0', ['IND', 'REQ', 'NA']],
+			'optional, accepted' => ['2', '3', ['IND', 'OPT', 'AC']],
+			'resource, tentative' => ['3', '2', ['RES', 'REQ', 'TE']],
+			'required, declined' => ['1', '4', ['IND', 'REQ', 'DE']],
+			'required, not responded' => ['1', '5', ['IND', 'REQ', 'NA']],
+		];
+	}
+
+	#[\PHPUnit\Framework\Attributes\DataProvider('attendeeTypesAndStatuses')]
+	public function testCreateEventWithAttendeeTypeAndStatus($type, $status, array $expected) {
+		// As the phone sends them (no address, to stay off ext-imap)
 		$attendee = new \SyncAttendee();
 		$attendee->name = 'Anna';
-		$attendee->attendeetype = '2';
-		$attendee->attendeestatus = '3';
+		$attendee->attendeetype = $type;
+		$attendee->attendeestatus = $status;
 		$event = self::newEvent('Meeting');
 		$event->attendees = [$attendee];
 
 		$stat = $this->logon(\BackendWTCalendar::class)->ChangeMessage('10', '', $event, self::contentParameters());
 
 		$stored = $this->webtop->item('calendar', '10', $stat['id'])['data']['attendees'][0];
-		$this->assertSame(['IND', 'OPT', 'AC'], [$stored['type'], $stored['role'], $stored['status']]);
+		$this->assertSame($expected, [$stored['type'], $stored['role'], $stored['status']]);
 	}
 
 	public function testModifiedOccurrenceAsksThePhoneToResync() {

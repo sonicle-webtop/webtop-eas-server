@@ -246,38 +246,96 @@ class ZPUtil {
 	
 	/**
 	 * Tries to guess the timezone name from a timezone-info.
-	 * 
+	 *
+	 * The timezone-info is compared with PHP's own timezone data (offsets and
+	 * daylight saving changes of the current year), not with Z-Push's table:
+	 * there the zones Z-Push does not know get the rules of London (so eg.
+	 * America/Ciudad_Juarez, UTC-7, matched a London phone) and the rules of
+	 * some zones are outdated (eg. Mexico and Brazil no longer have daylight
+	 * saving time).
+	 *
 	 * @param array $tzObj The timezone-info object
 	 * @param String $myTZName A timezone name/ID to be evaluated as first
 	 * @return String
 	 */
 	public static function guessTZNameFromTZObj($tzObj, $myTZName = null) {
-		// Get a list of all timezones
+		$year = (int)gmdate('Y');
+		$expected = self::tzObjYearProfile($tzObj, $year);
+
 		$tzIds = \DateTimeZone::listIdentifiers();
-		// Adds default/system timezone (at beginning)
-		array_unshift($tzIds, date_default_timezone_get());
-		// Adds my timezone (at beginning), if present
-		if (!is_null($myTZName)) array_unshift($tzIds, $myTZName);
-		
-		foreach ($tzIds as $tzId) {
-			$tzObj2 = \TimezoneUtil::GetFullTZFromTZName($tzId);
-			if ($tzObj['bias'] !== $tzObj2['bias']) continue;
-			if ($tzObj['dstbias'] !== $tzObj2['dstbias']) continue;
-			if ($tzObj['dststartyear'] !== $tzObj2['dststartyear']) continue;
-			if ($tzObj['dststartmonth'] !== $tzObj2['dststartmonth']) continue;
-			if ($tzObj['dststartday'] !== $tzObj2['dststartday']) continue;
-			if ($tzObj['dststartweek'] !== $tzObj2['dststartweek']) continue;
-			if ($tzObj['dststarthour'] !== $tzObj2['dststarthour']) continue;
-			if ($tzObj['dststartminute'] !== $tzObj2['dststartminute']) continue;
-			if ($tzObj['dstendyear'] !== $tzObj2['dstendyear']) continue;
-			if ($tzObj['dstendmonth'] !== $tzObj2['dstendmonth']) continue;
-			if ($tzObj['dstendday'] !== $tzObj2['dstendday']) continue;
-			if ($tzObj['dstendweek'] !== $tzObj2['dstendweek']) continue;
-			if ($tzObj['dstendhour'] !== $tzObj2['dstendhour']) continue;
-			if ($tzObj['dstendminute'] !== $tzObj2['dstendminute']) continue;
-			return $tzId;
+		// Evaluated first, in this order: my timezone, the one written in the
+		// timezone-info (we write the ID there), the default one and UTC
+		$preferred = [$myTZName, self::decodeTZName($tzObj['tzname']), date_default_timezone_get(), 'UTC'];
+		foreach (array_unique(array_merge(array_filter($preferred), $tzIds)) as $tzId) {
+			try {
+				$tz = new \DateTimeZone($tzId);
+			} catch (\Exception $ex) {
+				continue; // Not a valid ID (eg. a Windows name written in the timezone-info)
+			}
+			if (self::phpYearProfile($tz, $year) === $expected) return $tzId;
 		}
 		return date_default_timezone_get();
+	}
+
+	/**
+	 * Returns what a timezone does in the passed year, from the timezone-info:
+	 * [lower offset, higher offset, start of the higher one, start of the lower
+	 * one], in seconds and UTC timestamps; the starts are null without daylight
+	 * saving time.
+	 */
+	private static function tzObjYearProfile($tzObj, $year) {
+		$std = -($tzObj['bias'] + $tzObj['stdbias']) * 60;
+		if (empty($tzObj['dststartmonth']) || empty($tzObj['dstendmonth'])) {
+			return [$std, $std, null, null];
+		}
+		$dst = -($tzObj['bias'] + $tzObj['dstbias']) * 60;
+		// Each change is expressed in the local time in force before it
+		$toDst = self::systemTimeToTimestamp($tzObj, 'dststart', $year, $std);
+		$toStd = self::systemTimeToTimestamp($tzObj, 'dstend', $year, $dst);
+		return ($dst > $std) ? [$std, $dst, $toDst, $toStd] : [$dst, $std, $toStd, $toDst];
+	}
+
+	/**
+	 * Returns the UTC timestamp of a change of the timezone-info (SYSTEMTIME
+	 * fields with the passed prefix) in the passed year. Without a year, the
+	 * change is on the nth day of week of the month (week 5 being the last).
+	 */
+	private static function systemTimeToTimestamp($tzObj, $prefix, $year, $offset) {
+		$month = $tzObj[$prefix.'month'];
+		if (!empty($tzObj[$prefix.'year'])) {
+			$day = $tzObj[$prefix.'week']; // Absolute date: wDay is the day of month
+		} else {
+			$days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+			$nth = ($tzObj[$prefix.'week'] >= 5) ? 'last' : ['first', 'second', 'third', 'fourth'][$tzObj[$prefix.'week'] - 1];
+			$ref = new \DateTime(sprintf('%04d-%02d-01', $year, $month), new \DateTimeZone('UTC'));
+			$day = (int)$ref->modify($nth.' '.$days[$tzObj[$prefix.'day']].' of this month')->format('j');
+		}
+		return gmmktime($tzObj[$prefix.'hour'], $tzObj[$prefix.'minute'], $tzObj[$prefix.'second'], $month, $day, $year) - $offset;
+	}
+
+	/**
+	 * Returns what a PHP timezone does in the passed year, as tzObjYearProfile().
+	 * The higher offset is taken as daylight saving time instead of the isdst
+	 * flag, which is reversed in some zones (eg. Europe/Dublin).
+	 */
+	private static function phpYearProfile(\DateTimeZone $tz, $year) {
+		$from = gmmktime(0, 0, 0, 1, 1, $year);
+		$transitions = $tz->getTransitions($from, gmmktime(0, 0, 0, 1, 1, $year + 1) - 1);
+		$offset = $transitions[0]['offset']; // The one in force when the year begins
+		$changes = array_slice($transitions, 1);
+		if (empty($changes)) return [$offset, $offset, null, null];
+		if (count($changes) !== 2) return null; // eg. Morocco during Ramadan: not expressible as a timezone-info
+		$offsets = [$changes[0]['offset'], $changes[1]['offset']];
+		$higher = ($offsets[0] > $offsets[1]) ? 0 : 1;
+		return [$offsets[1 - $higher], $offsets[$higher], $changes[$higher]['ts'], $changes[1 - $higher]['ts']];
+	}
+
+	/**
+	 * Decodes a timezone name of a timezone-info (UTF-16LE, null padded).
+	 */
+	private static function decodeTZName($tzName) {
+		$name = rtrim(mb_convert_encoding((string)$tzName, 'UTF-8', 'UTF-16LE'), "\0");
+		return ($name === '') ? null : $name;
 	}
 	
 	
