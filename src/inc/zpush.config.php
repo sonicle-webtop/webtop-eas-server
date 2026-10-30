@@ -169,7 +169,10 @@
 
     // The file containing the policies' settings.
     // Set a full path or relative to the z-push main directory
-    define('PROVISIONING_POLICYFILE', 'policies.ini');
+    // WebTop keeps its own copy of the Z-Push 2.4.5 policies: Z-Push 2.7 changed
+    // maxattsize ('' -> '-1', same meaning) and so the policy hash, which would
+    // force every phone paired before the upgrade to provision again.
+    define('PROVISIONING_POLICYFILE', WT_EAS_ROOT.'/inc/policies.ini');
 
     // Default conflict preference
     // Some devices allow to set if the server or PIM (mobile)
