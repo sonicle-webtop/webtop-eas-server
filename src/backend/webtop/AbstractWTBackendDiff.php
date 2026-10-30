@@ -20,6 +20,8 @@ abstract class AbstractWTBackendDiff extends BackendDiff {
 	private $sinkFolders;
 	private $sinkStates;
 	private $sinkLastCheck = 0;
+	// HTTP client of the REST calls: when null every API client creates its own (tests put a fake WebTop here)
+	protected static $httpClient = null;
 
 	public function __construct() {
 		$this->foldersCache = [];
@@ -40,6 +42,14 @@ abstract class AbstractWTBackendDiff extends BackendDiff {
 		} else {
 			return array('emailaddress' => $username, 'fullname' => $username);
 		}
+	}
+	
+	public static function setHttpClient(?\GuzzleHttp\ClientInterface $client) {
+		self::$httpClient = $client;
+	}
+	
+	protected function getHttpClient() {
+		return self::$httpClient;
 	}
 	
 	protected function getWTApiConfig($username = null, $password = null) {
@@ -144,7 +154,7 @@ abstract class AbstractWTBackendDiff extends BackendDiff {
 		
 		$this->deviceFamily = ZPUtil::getDeviceFamily();
 		try {
-			$api = new \WT\Client\Core\Api\PrincipalsApi(null, $this->getWTApiConfig($username, $password));
+			$api = new \WT\Client\Core\Api\PrincipalsApi($this->getHttpClient(), $this->getWTApiConfig($username, $password));
 			$item = $api->getPrincipalInfo($username, [self::PERMREF_DEVICES_SYNC]);
 			//$this->currentDomain = $domain;
 			$this->currentUsername = $username;

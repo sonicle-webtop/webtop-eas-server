@@ -82,7 +82,7 @@ class BackendWTContacts extends AbstractWTBackendDiff {
 		$logger = $this->getLogger();
 		
 		try {
-			$api = new \WT\Client\Contacts\Api\EasApi(null, $this->getContactsApiConfig());
+			$api = new \WT\Client\Contacts\Api\EasApi($this->getHttpClient(), $this->getContactsApiConfig());
 			$logger->debug('[REST] --> getFolders()');
 			$items = $api->getFolders();
 			$map = [];
@@ -103,7 +103,7 @@ class BackendWTContacts extends AbstractWTBackendDiff {
 		$logger = $this->getLogger();
 		
 		try {
-			$api = new \WT\Client\Contacts\Api\EasApi(null, $this->getContactsApiConfig());
+			$api = new \WT\Client\Contacts\Api\EasApi($this->getHttpClient(), $this->getContactsApiConfig());
 			$logger->debug('[REST] --> getMessagesStats({})', [$folderId]);
 			$items = $api->getMessagesStats($folderId);
 			$map = [];
@@ -127,7 +127,7 @@ class BackendWTContacts extends AbstractWTBackendDiff {
 		$truncsize = Utils::GetTruncSize($contentparameters->GetTruncation());
 		
 		try {
-			$api = new \WT\Client\Contacts\Api\EasApi(null, $this->getContactsApiConfig());
+			$api = new \WT\Client\Contacts\Api\EasApi($this->getHttpClient(), $this->getContactsApiConfig());
 			$logger->debug('[REST] --> getMessage({}, {})', [$foId, $id]);
 			$item = $api->getMessage($foId, $id);
 			if ($logger->isTraceEnabled()) $logger->trace('[REST] ...'.PHP_EOL.'{}', [$item]);
@@ -161,7 +161,7 @@ class BackendWTContacts extends AbstractWTBackendDiff {
 			}
 			
 			$body = $this->toApiSyncContactUpdate($message);
-			$api = new \WT\Client\Contacts\Api\EasApi(null, $this->getContactsApiConfig());
+			$api = new \WT\Client\Contacts\Api\EasApi($this->getHttpClient(), $this->getContactsApiConfig());
 			if (empty($id)) {
 				$logger->debug('[REST] --> addMessage({})', [$foId]);
 				$stat = $api->addMessage($body, $foId);
@@ -202,7 +202,7 @@ class BackendWTContacts extends AbstractWTBackendDiff {
 				return false;
 			}
 			
-			$api = new \WT\Client\Contacts\Api\EasApi(null, $this->getContactsApiConfig());
+			$api = new \WT\Client\Contacts\Api\EasApi($this->getHttpClient(), $this->getContactsApiConfig());
 			$logger->debug('[REST] --> deleteMessage({}, {})', [$foId, $id]);
 			$api->deleteMessage($foId, $id);
 			$this->updateApiSyncFolderMessage($foId, $id, null); // Update cached stat info!

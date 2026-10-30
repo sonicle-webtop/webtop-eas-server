@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/13.4/phpunit.xsd"
+		 bootstrap="tests/bootstrap.php"
+		 colors="true"
+		 cacheDirectory="nbproject/private/phpunit-cache"
+		 failOnWarning="true"
+		 failOnDeprecation="false"
+		 displayDetailsOnTestsThatTriggerWarnings="true"
+		 displayDetailsOnTestsThatTriggerErrors="true">
+	<testsuites>
+		<testsuite name="eas-server">
+			<directory suffix="Test.php">tests</directory>
+		</testsuite>
+	</testsuites>
+	<!-- deprecations of the libraries (Guzzle 6, generated REST clients, Z-Push) are not ours to fix here -->
+	<source ignoreIndirectDeprecations="true">
+		<include>
+			<directory>src/lib/webtop</directory>
+			<directory>src/backend/webtop</directory>
+			<directory>src/backend/wtcalendar</directory>
+			<directory>src/backend/wtcontacts</directory>
+			<directory>src/backend/wttasks</directory>
+		</include>
+	</source>
+</phpunit>

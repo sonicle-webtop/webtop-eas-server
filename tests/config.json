@@ -1,0 +1,12 @@
+{
+	"timezone": "Europe/Rome",
+	"log": {
+		"level": "OFF"
+	},
+	"state": {
+		"dir": "state"
+	},
+	"webtop": {
+		"apiBaseUrl": "http://webtop.test/webtop"
+	}
+}

@@ -28,7 +28,7 @@ class BackendWTTasks extends AbstractWTBackendDiff {
 		$logger = $this->getLogger();
 		
 		try {
-			$api = new \WT\Client\Tasks\Api\EasApi(null, $this->getTasksApiConfig());
+			$api = new \WT\Client\Tasks\Api\EasApi($this->getHttpClient(), $this->getTasksApiConfig());
 			$logger->debug('[REST] --> getFolders()');
 			$items = $api->getFolders();
 			$map = [];
@@ -49,7 +49,7 @@ class BackendWTTasks extends AbstractWTBackendDiff {
 		$logger = $this->getLogger();
 		
 		try {
-			$api = new \WT\Client\Tasks\Api\EasApi(null, $this->getTasksApiConfig());
+			$api = new \WT\Client\Tasks\Api\EasApi($this->getHttpClient(), $this->getTasksApiConfig());
 			$logger->debug('[REST] --> getMessagesStats({})', [$folderId]);
 			$items = $api->getMessagesStats($folderId, $isoCutoffDate);
 			$map = [];
@@ -75,7 +75,7 @@ class BackendWTTasks extends AbstractWTBackendDiff {
 		//$bodypreference = $contentparameters->GetBodyPreference(); /* fmbiete's contribution r1528, ZP-320 */
 		
 		try {
-			$api = new \WT\Client\Tasks\Api\EasApi(null, $this->getTasksApiConfig());
+			$api = new \WT\Client\Tasks\Api\EasApi($this->getHttpClient(), $this->getTasksApiConfig());
 			$logger->debug('[REST] --> getMessage({}, {})', [$foId, $id]);
 			$item = $api->getMessage($foId, $id);
 			if ($logger->isTraceEnabled()) $logger->trace('[REST] ...'.PHP_EOL.'{}', [$item]);
@@ -109,7 +109,7 @@ class BackendWTTasks extends AbstractWTBackendDiff {
 			}
 			
 			$body = $this->toApiSyncTaskUpdate($message);
-			$api = new \WT\Client\Tasks\Api\EasApi(null, $this->getTasksApiConfig());
+			$api = new \WT\Client\Tasks\Api\EasApi($this->getHttpClient(), $this->getTasksApiConfig());
 			if (empty($id)) {
 				$logger->debug('[REST] --> addMessage({})', [$foId]);
 				$stat = $api->addMessage($body, $foId);
@@ -150,7 +150,7 @@ class BackendWTTasks extends AbstractWTBackendDiff {
 				return false;
 			}
 			
-			$api = new \WT\Client\Tasks\Api\EasApi(null, $this->getTasksApiConfig());
+			$api = new \WT\Client\Tasks\Api\EasApi($this->getHttpClient(), $this->getTasksApiConfig());
 			$logger->debug('[REST] --> deleteMessage({}, {})', [$foId, $id]);
 			$api->deleteMessage($foId, $id);
 			$this->updateApiSyncFolderMessage($foId, $id, null); // Update cached stat info!
