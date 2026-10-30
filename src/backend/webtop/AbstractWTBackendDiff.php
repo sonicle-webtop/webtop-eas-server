@@ -15,7 +15,8 @@ abstract class AbstractWTBackendDiff extends BackendDiff {
 	protected $foldersCache;
 	protected $folderMessagesCache;
 	protected $legacyFolderIdsCache;
-	protected $useLegacyIds;
+	protected $useLegacyFolderIds;
+	protected $forceLegacyFolderTypes;
 	private $sinkFolders;
 	private $sinkStates;
 	private $sinkLastCheck = 0;
@@ -24,7 +25,8 @@ abstract class AbstractWTBackendDiff extends BackendDiff {
 		$this->foldersCache = [];
 		$this->folderMessagesCache = [];
 		$this->legacyFolderIdsCache = [];
-		$this->useLegacyIds = Config::get()->getUseLegacyFolderIds();
+		$this->useLegacyFolderIds = Config::get()->getUseLegacyFolderIds();
+		$this->forceLegacyFolderTypes = Config::get()->getForceLegacyFolderTypes();
 		$this->sinkFolders = [];
 		$this->sinkStates = [];
 	}
@@ -52,9 +54,9 @@ abstract class AbstractWTBackendDiff extends BackendDiff {
 	
 	protected function encodeFolderId($id) {
 		$logger = $this->getLogger();
-		$logger->debug('{}({})', [__METHOD__, $id]);
+		$logger->trace('{}({})', [__METHOD__, $id]);
 		
-		if ($this->useLegacyIds === true) {
+		if ($this->useLegacyFolderIds === true) {
 			$folder = $this->getApiSyncFolder($id);
 			if (!is_null($folder)) {
 				$entry = $this->buildLegacyFolderIdCacheEntry($folder);
@@ -72,9 +74,9 @@ abstract class AbstractWTBackendDiff extends BackendDiff {
 	
 	protected function decodeFolderId($id) {
 		$logger = $this->getLogger();
-		$logger->debug('{}({})', [__METHOD__, $id]);
+		$logger->trace('{}({})', [__METHOD__, $id]);
 		
-		if ($this->useLegacyIds === true) {
+		if ($this->useLegacyFolderIds === true) {
 			$logger = $this->getLogger();
 			if (empty($this->legacyFolderIdsCache)) {
 				$logger->debug('Building folder decoding cache');

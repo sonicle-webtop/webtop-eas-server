@@ -10,6 +10,14 @@ Make sure to have at least WebTop release **wt-5.27.0** (pay attention to update
 
  &#9888; Version `2.4.5.20` has its own logging module, instead of rely on ZPush internal implementation. So, from this version onward, no dedicated "errors log" (`server_error.log`) file will be produced anymore.
 
+ &#9888; Version `2.7.7.0` requires **PHP >= 8.1**.
+Additionally, devices already paired with a `2.4.x` version will perform a **full resync** of calendars, contacts and tasks after the upgrade, for two reasons:
+
+- default folders (the user's default calendar, address book and task list) are now reported to devices with their proper *default* folder type instead of the *user-created* one; devices see the type change and reload those folders. Set `state.forceLegacyFolderTypes` to `true` to keep the old types and avoid this.
+- the past-events window of calendars is now a fixed lower bound, configured with `calendar.syncBackMonths` (1 month by default), instead of the time filter chosen on the device; events older than this bound are removed from devices. Increase the value (or set it to `0`) to keep more history on devices.
+
+No data is lost on the server side, but changes made on a device and not yet synchronized may be lost: make sure devices are synchronized before upgrading. On devices with large calendars the resync may take a while.
+
 ## Requirements
 
 This backend is built on top of [Z-Push](http://z-push.org/), so you need to so you need to satisfy at least z-push [requirements](https://wiki.z-hub.io/display/ZP/Installation+from+source).
@@ -112,6 +120,8 @@ At the bare minimum, you need to set values to the following options: *log.dir*,
   Note that the configured webserver (or php processor) needs to have full read and write permissions on this directory. *(Required)*
 * `state.useLegacyFolderIds` \[boolean]
   Set to `true` to activate backward compatibility to old `z-push-webtop` folderIDs, this prevents the device from performing a full resync of data after transitioning from `z-push-webtop` to `webtop-eas-server`. *(Defaults to: `false`)*
+* `state.forceLegacyFolderTypes` \[boolean]
+  Set to `true` to report all calendars, address books and task lists to devices as *user-created* folders, as versions `2.4.x` did, instead of marking the user's default ones with the *default* folder type. This prevents devices already paired with a `2.4.x` version from reloading their default folders after the upgrade. Note that a default folder is marked as such only if it is writable on the device: if it is synchronized in read-only mode, it is reported as a *user-created* folder anyway. Changing this value later causes devices to reload their default folders again. *(Defaults to: `false`)*
 * `autodiscover.enabled` \[boolean]
   Set to `true` to switch-on autodiscovery functionality. Remember that this require a proper configuration of you webserver, as described in [Service AutoDiscovery](#service-autodiscovery) section. *(Defaults to: `false`)*
 * `autodiscover.hostname` \[string]

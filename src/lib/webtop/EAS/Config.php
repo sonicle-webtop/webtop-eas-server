@@ -26,6 +26,7 @@ class Config extends AbstractConfig {
 		'log.error.name' => 'server_error.log',
 		'ipc.key.offset' => 0,
 		'state.useLegacyFolderIds' => false,
+		'state.forceLegacyFolderTypes' => false,
 		'autodiscover.enabled' => false,
 		'webtop.stripSubdomainFromLoginUsername' => false,
 		'webtop.apiUrlPath' => '/api/com.sonicle.webtop.core/v1',
@@ -119,6 +120,10 @@ class Config extends AbstractConfig {
 	
 	public function getUseLegacyFolderIds() {
 		return $this->getValue('state.useLegacyFolderIds', $this->defaults);
+	}
+	
+	public function getForceLegacyFolderTypes() {
+		return $this->getValue('state.forceLegacyFolderTypes', $this->defaults);
 	}
 	
 	public function getAutodiscoverEnabled() {

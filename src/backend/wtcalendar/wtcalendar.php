@@ -212,7 +212,12 @@ class BackendWTCalendar extends AbstractWTBackendDiff {
 		$obj->parentid = '0';
 		//$obj->parentid = $item->getOwnerUsername();
 		$obj->displayname = $item->getDisplayName();
-		$obj->type = $item->getDeflt() ? SYNC_FOLDER_TYPE_APPOINTMENT : SYNC_FOLDER_TYPE_USER_APPOINTMENT;
+		if ($this->forceLegacyFolderTypes === true) {
+			$obj->type = SYNC_FOLDER_TYPE_USER_APPOINTMENT;
+		} else {
+			$obj->type = ($item->getDeflt() && $this->checkPermission($item->getElAcl(), 'c')) 
+				? SYNC_FOLDER_TYPE_APPOINTMENT : SYNC_FOLDER_TYPE_USER_APPOINTMENT;
+		}
 		return $obj;
 	}
 	
