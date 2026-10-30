@@ -109,6 +109,9 @@ define('IMAP_FOLDER_ARCHIVE', \WT\EAS\Config::get()->getMailImapFolderNameArchiv
 // forward messages inline (default true - inlined)
 define('IMAP_INLINE_FORWARD', true);
 
+// charset used by IMAP SEARCH (when undefined Z-Push logs a message at each request)
+define('IMAP_SEARCH_CHARSET', 'UTF-8');
+
 // list of folders we want to exclude from sync. Names, or part of it, separated by |
 // example: dovecot.sieve|archive|spam
 define('IMAP_EXCLUDED_FOLDERS', \WT\EAS\Config::get()->getMailImapFoldersIgnored());
