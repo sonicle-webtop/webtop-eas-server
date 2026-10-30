@@ -62,6 +62,13 @@ class ZPUtil {
 	}
 	
 	public static function parseInternetAddress($ia) {
+		// Z-Push 2.7 dropped its Mail_RFC822 fix that quoted the display name:
+		// unquoted names with accents, apostrophes, dots, commas or an email
+		// address (eg. "a@b.c <a@b.c>", as WebTop writes attendees without a
+		// name) no longer parse. Quote the name here, as Z-Push 2.4 did.
+		if (is_string($ia) && preg_match('/^\s*([^"<\s][^<]*?)\s*(<[^>]*>)\s*$/', $ia, $matches)) {
+			$ia = '"'.addcslashes($matches[1], '"\\').'" '.$matches[2];
+		}
 		$parser = new \Mail_RFC822();
 		$ret = $parser->parseAddressList($ia, 'local', null, null, 1);
 		if (($ret === false) || !is_array($ret) || (count($ret) < 1)) {
@@ -69,9 +76,20 @@ class ZPUtil {
 		} else {
 			return [
 				'address' => $ret[0]->mailbox.'@'.$ret[0]->host,
-				'personal' => $ret[0]->personal
+				'personal' => self::unquotePersonal($ret[0]->personal)
 			];
 		}
+	}
+
+	/**
+	 * Mail_RFC822 returns a quoted display name as is: remove the quotes and
+	 * the escaping, so that the phone gets the plain name.
+	 */
+	private static function unquotePersonal($personal) {
+		if (is_string($personal) && (strlen($personal) >= 2) && ($personal[0] === '"') && (substr($personal, -1) === '"')) {
+			return preg_replace('/\\\\(.)/s', '$1', substr($personal, 1, -1));
+		}
+		return $personal;
 	}
 	
 	public static function parseISODate($sdate, $tzName = 'UTC') {
