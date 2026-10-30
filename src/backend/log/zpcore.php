@@ -1,6 +1,6 @@
 <?php
 
-use lf4php\LoggerFactory;
+use WT\LoggerFactory;
 
 Class ZPCore extends Log {
 	
@@ -23,7 +23,7 @@ Class ZPCore extends Log {
      */
 	protected function Write($loglevel, $message) {
 		$logger = $this->getLogger();
-		if ($loglevel & LOGLEVEL_FATAL == LOGLEVEL_FATAL) {
+		if (($loglevel & LOGLEVEL_FATAL) == LOGLEVEL_FATAL) {
 			$logger->error($this->BuildLogString($loglevel, $message));
 		} else if (($loglevel & LOGLEVEL_ERROR) == LOGLEVEL_ERROR) {
 			$logger->error($this->BuildLogString($loglevel, $message));

@@ -15,7 +15,7 @@ Make sure to have at least WebTop release **wt-5.27.0** (pay attention to update
 This backend is built on top of [Z-Push](http://z-push.org/), so you need to so you need to satisfy at least z-push [requirements](https://wiki.z-hub.io/display/ZP/Installation+from+source).
 Then, summing:
 
-* PHP >= 7.4.X (with pdo, php-imap, php-mbstring, php-intl extensions installed)
+* PHP >= 8.1 (with pdo, php-imap, php-mbstring, php-intl extensions installed)
 * Apache with mod_php
 * WebTop instance supporting EAS REST API (core >= v.5.6.0, calendar >= v.5.21.0, contacts >= v.5.18.0, tasks >= v.5.15.0)
 

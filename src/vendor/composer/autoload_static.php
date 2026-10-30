@@ -116,7 +116,7 @@ class ComposerStaticInitb5c69df844eba00a99a848b618335af6
         ),
         'Psr\\Log\\' => 
         array (
-            0 => __DIR__ . '/..' . '/psr/log/Psr/Log',
+            0 => __DIR__ . '/..' . '/psr/log/src',
         ),
         'Psr\\Http\\Message\\' => 
         array (
@@ -149,21 +149,6 @@ class ComposerStaticInitb5c69df844eba00a99a848b618335af6
     );
 
     public static $prefixesPsr0 = array (
-        'l' => 
-        array (
-            'lf4php' => 
-            array (
-                0 => __DIR__ . '/..' . '/lf4php/lf4php-monolog/src',
-                1 => __DIR__ . '/..' . '/lf4php/lf4php/src',
-            ),
-        ),
-        'L' => 
-        array (
-            'LazyMap\\' => 
-            array (
-                0 => __DIR__ . '/..' . '/ocramius/lazy-map/src',
-            ),
-        ),
         'D' => 
         array (
             'DataURI' => 

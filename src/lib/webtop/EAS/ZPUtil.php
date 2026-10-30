@@ -2,7 +2,7 @@
 
 namespace WT\EAS;
 
-use lf4php\LoggerFactory;
+use WT\LoggerFactory;
 use Html2Text\Html2Text;
 use WT\Util;
 use DataURI;

@@ -1,6 +1,6 @@
 <?php
 
-use lf4php\LoggerFactory;
+use WT\LoggerFactory;
 use WT\EAS\Config;
 use WT\EAS\ZPUtil;
 
