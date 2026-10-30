@@ -158,7 +158,17 @@ class ZPUtil {
 	public static function tzNameToTZBlob($tzName) {
 		$tzId = \TimezoneUtil::GetPhpSupportedTimezone($tzName);
 		$tzObj = \TimezoneUtil::GetFullTZFromTZName($tzId);
-		
+		// Z-Push's table has the rules of London for the zones it does not know
+		// (eg. Europe/Kyiv) and outdated rules for others (eg. Europe/Moscow,
+		// Europe/Istanbul): when it does not match PHP's own data, the rules are
+		// taken from there. Otherwise they stay as they are, so that the phones
+		// see no change in the events of the zones it gets right.
+		$year = (int)gmdate('Y');
+		$tz = new \DateTimeZone($tzId);
+		if (self::tzObjYearProfile($tzObj, $year) !== self::phpYearProfile($tz, $year)) {
+			$tzObj = self::phpTZObj($tz, $year);
+		}
+
 		// GetFullTZFromTZName() already called encodeTZName() internally, storing
 		// a platform-dependent binary string in tzname/tznamedst. We bypass
 		// GetSyncBlobFromTZ() entirely and re-pack the blob ourselves using
@@ -192,6 +202,69 @@ class ZPUtil {
 		return base64_encode($packed);
 	}
 	
+	/**
+	 * Builds the timezone-info of a PHP timezone: offsets and daylight saving
+	 * changes of the passed year, written as yearly rules (nth or last day of
+	 * week of the month) that hold for the next year too.
+	 *
+	 * @param \DateTimeZone $tz
+	 * @param int $year
+	 * @return array Timezone-info, with the fields of TimezoneUtil::GetFullTZFromTZName()
+	 */
+	private static function phpTZObj(\DateTimeZone $tz, $year) {
+		$tzObj = [
+			'bias' => 0, 'stdbias' => 0, 'dstbias' => 0,
+			'dststartyear' => 0, 'dststartmonth' => 0, 'dststartday' => 0, 'dststartweek' => 0,
+			'dststarthour' => 0, 'dststartminute' => 0, 'dststartsecond' => 0, 'dststartmillis' => 0,
+			'dstendyear' => 0, 'dstendmonth' => 0, 'dstendday' => 0, 'dstendweek' => 0,
+			'dstendhour' => 0, 'dstendminute' => 0, 'dstendsecond' => 0, 'dstendmillis' => 0
+		];
+		$profile = self::phpYearProfile($tz, $year);
+		if (is_null($profile)) {
+			// More than two changes a year (eg. Morocco during Ramadan): the offset of now, without daylight saving
+			$tzObj['bias'] = intdiv(-$tz->getOffset(new \DateTime('now', new \DateTimeZone('UTC'))), 60);
+			return $tzObj;
+		}
+		list($std, $dst, $toDst, $toStd) = $profile;
+		$tzObj['bias'] = intdiv(-$std, 60);
+		if (is_null($toDst)) return $tzObj;
+
+		$tzObj['dstbias'] = intdiv($std - $dst, 60);
+		$next = self::phpYearProfile($tz, $year + 1);
+		// Each change is expressed in the local time in force before it
+		self::setSystemTimeRule($tzObj, 'dststart', $toDst + $std, is_null($next) ? null : $next[2] + $std);
+		self::setSystemTimeRule($tzObj, 'dstend', $toStd + $dst, is_null($next) ? null : $next[3] + $dst);
+		return $tzObj;
+	}
+
+	/**
+	 * Sets the SYSTEMTIME fields with the passed prefix to the yearly rule of a
+	 * change: month, day of week and week of month (5 being the last), time.
+	 * A change in the last seven days of the month is taken as the last day of
+	 * week, unless the next year shows it is the fourth (eg. "fourth Sunday").
+	 *
+	 * @param array $tzObj
+	 * @param string $prefix
+	 * @param int $local Local time of the change, as a timestamp read in UTC
+	 * @param int|null $nextLocal Local time of the same change the next year
+	 */
+	private static function setSystemTimeRule(array &$tzObj, $prefix, $local, $nextLocal) {
+		$day = (int)gmdate('j', $local);
+		$week = intdiv($day - 1, 7) + 1;
+		if ($day > (int)gmdate('t', $local) - 7) {
+			$nextDay = is_null($nextLocal) ? null : (int)gmdate('j', $nextLocal);
+			$nextIsLast = !is_null($nextLocal) && ($nextDay > (int)gmdate('t', $nextLocal) - 7);
+			$nextWeek = is_null($nextLocal) ? null : intdiv($nextDay - 1, 7) + 1;
+			if (($week === 5) || $nextIsLast || ($nextWeek !== $week)) $week = 5;
+		}
+		$tzObj[$prefix.'month'] = (int)gmdate('n', $local);
+		$tzObj[$prefix.'day'] = (int)gmdate('w', $local);
+		$tzObj[$prefix.'week'] = $week;
+		$tzObj[$prefix.'hour'] = (int)gmdate('G', $local);
+		$tzObj[$prefix.'minute'] = (int)gmdate('i', $local);
+		$tzObj[$prefix.'second'] = (int)gmdate('s', $local);
+	}
+
 	/**
 	 * Encodes a timezone display name into a 64-byte UTF-16LE field,
 	 * truncated to 31 characters (62 bytes) to ensure a null terminator fits.
