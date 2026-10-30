@@ -24,7 +24,7 @@ class BackendWTTasks extends AbstractWTBackendDiff {
 		return LoggerFactory::getLogger(__CLASS__);
 	}
 	
-	protected function doGetApiFolders() {
+	protected function doGetApiFolders($throw = false) {
 		$logger = $this->getLogger();
 		
 		try {
@@ -39,6 +39,7 @@ class BackendWTTasks extends AbstractWTBackendDiff {
 			return $map;
 
 		} catch (\WT\Client\Tasks\ApiException $ex) {
+			if ($throw) throw $ex;
 			$logger->error($ex);
 			return null;
 		}

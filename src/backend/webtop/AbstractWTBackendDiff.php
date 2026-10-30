@@ -241,43 +241,79 @@ abstract class AbstractWTBackendDiff extends BackendDiff {
 	public function ChangesSinkInitialize($folderid) {
 		$logger = $this->getLogger();
 		$logger->debug('{}({})', [__METHOD__, $folderid]);
-		
-		$this->sinkFolders[] = $folderid;
+
+		// $folderid is the id Z-Push knows (encoded, with legacy folder ids): keep
+		// it for the notifications, and the WebTop id for checking the changes
+		try {
+			$foId = $this->decodeFolderId($folderid);
+		} catch (FatalException $ex) {
+			// A legacy id of a folder renamed or no longer shared: Z-Push will
+			// then ask the phone to sync its folder list again
+			$logger->debug('Unknown folder: {}', [$ex->getMessage()]);
+			return false;
+		}
+		// Remember the folder state now: any change made from here on wakes the phone
+		$folder = $this->getApiSyncFolder($foId);
+		$this->sinkFolders[$folderid] = $foId;
+		$this->sinkStates[$folderid] = is_null($folder) ? null : $folder->getEtag();
+		if ($logger->isTraceEnabled()) $logger->trace('Initializing changes sink... [{}, {}]', [$foId, $this->sinkStates[$folderid]]);
 		return true;
 	}
-	
+
 	public function ChangesSink($timeout = 30) {
 		$logger = $this->getLogger();
 		if ($logger->isDebugEnabled()) $logger->debug('{}({})', [__METHOD__, $timeout]);
-		
+
 		$notifications = [];
-		$stopat = time() + $timeout -1;
-		while ($stopat > time() && empty($notifications)) {
-			$folders = $this->getApiSyncFolders();
-			if (!is_null($folders)) {
-				foreach ($this->sinkFolders as $folderId) {
-					$newState = array_key_exists($folderId, $folders) ? $folders[$folderId]->getEtag() : null;
-					if (!isset($this->sinkStates[$folderId])) {
-						if ($logger->isTraceEnabled()) $logger->trace('Initializing changes sink... [{}, {}]', [$folderId, $newState]);
-						$this->sinkStates[$folderId] = $newState;
-					}
-					if ($logger->isTraceEnabled()) $logger->trace('Checking changes... [{}, {} =? {}]', [$folderId, $this->sinkStates[$folderId], $newState]);
-					if ($this->sinkStates[$folderId] !== $newState) {
-						if ($logger->isTraceEnabled()) $logger->trace('Changes for folder [{}]: {} -> {}', [$folderId, $this->sinkStates[$folderId], $newState]);
-						$notifications[] = $this->encodeFolderId($folderId);
-						$this->sinkStates[$folderId] = $newState;
-					}
-				}
-			}
-			
-			if (empty($notifications)) {
-				$sleepTime = min($timeout, 30);
-				if ($logger->isDebugEnabled()) $logger->debug('({}) no changes, going to sleep ({})', [$timeout, $sleepTime]);
-				sleep($sleepTime);
+		if (empty($this->sinkFolders)) return $notifications;
+
+		// Z-Push 2.7 BackendCombined calls this with a 1 second timeout every
+		// PING_INTERVAL and waits by itself: then a single check is done
+		$stopat = time() + $timeout - 1;
+		while (true) {
+			$notifications = $this->checkSinkFoldersChanges();
+			if (!empty($notifications) || (time() >= $stopat)) break;
+			$sleepTime = min($stopat - time(), 30);
+			if ($logger->isDebugEnabled()) $logger->debug('({}) no changes, going to sleep ({})', [$timeout, $sleepTime]);
+			sleep($sleepTime);
+		}
+
+		if ($logger->isDebugEnabled()) $logger->debug('({}) returning notifications: [{}]', [$timeout, implode(' ', $notifications)]);
+		return $notifications;
+	}
+
+	/**
+	 * Compares the watched folders with their current state in WebTop.
+	 *
+	 * @return array Ids (as known by Z-Push) of the folders that changed.
+	 */
+	private function checkSinkFoldersChanges() {
+		$logger = $this->getLogger();
+
+		$notifications = [];
+		try {
+			// Fresh states: the folders cache was filled when the request started
+			$folders = $this->doGetApiFolders(true);
+		} catch (\Exception $ex) {
+			// WebTop unreachable or answering errors (eg. while restarting):
+			// do not wake the phone, keep waiting
+			$logger->warn('Unable to check folders for changes: {}', [$ex->getMessage()]);
+			return $notifications;
+		}
+		if (is_null($folders)) return $notifications;
+
+		$this->foldersCache = $folders;
+		foreach ($this->sinkFolders as $folderid => $foId) {
+			$newState = array_key_exists($foId, $folders) ? $folders[$foId]->getEtag() : null;
+			if ($logger->isTraceEnabled()) $logger->trace('Checking changes... [{}, {} =? {}]', [$foId, $this->sinkStates[$folderid], $newState]);
+			if ($this->sinkStates[$folderid] !== $newState) {
+				if ($logger->isTraceEnabled()) $logger->trace('Changes for folder [{}]: {} -> {}', [$foId, $this->sinkStates[$folderid], $newState]);
+				$notifications[] = $folderid;
+				$this->sinkStates[$folderid] = $newState;
+				// The message list cached before the change would hide it
+				unset($this->folderMessagesCache[$foId]);
 			}
 		}
-		
-		if ($logger->isDebugEnabled()) $logger->debug('({}) returning notifications: [{}]', [$timeout, implode(' ', $notifications)]);
 		return $notifications;
 	}
 	
@@ -360,7 +396,8 @@ abstract class AbstractWTBackendDiff extends BackendDiff {
 	}
 	
 	protected abstract function getLogger();
-	protected abstract function doGetApiFolders();
+	// $throw: pass WebTop REST errors on, instead of logging them (used by the changes sink)
+	protected abstract function doGetApiFolders($throw = false);
 	protected abstract function doGetApiFolderMessages($folderId, $isoCutoffDate);
 	protected abstract function toZPStatFolder($folder);
 	protected abstract function toZPSyncFolder($folder);

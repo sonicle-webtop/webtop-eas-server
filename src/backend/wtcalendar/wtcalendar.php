@@ -38,7 +38,7 @@ class BackendWTCalendar extends AbstractWTBackendDiff {
 		return ($months > 0) ? strtotime('-' . $months . ' months') : null;
 	}
 	
-	protected function doGetApiFolders() {
+	protected function doGetApiFolders($throw = false) {
 		$logger = $this->getLogger();
 		
 		try {
@@ -53,6 +53,7 @@ class BackendWTCalendar extends AbstractWTBackendDiff {
 			return $map;
 
 		} catch (\WT\Client\Calendar\ApiException $ex) {
+			if ($throw) throw $ex;
 			$logger->error($ex);
 			return null;
 		}
