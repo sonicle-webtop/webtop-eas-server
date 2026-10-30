@@ -343,6 +343,7 @@ class BackendWTContacts extends AbstractWTBackendDiff {
 					} else {
 						$obj->offsetSet($wtName, $item->$zpName);
 					}
+					break;
 				
 				default:
 					$obj->offsetSet($wtName, $item->$zpName);

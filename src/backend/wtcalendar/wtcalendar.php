@@ -554,13 +554,14 @@ class BackendWTCalendar extends AbstractWTBackendDiff {
 		// CHA = CHAIR
 		// OPT = OPTIONAL
 		// REQ = REQUIRED
-		if ($asType === 3) {
+		// Z-Push decodes WBXML values as strings
+		if (intval($asType) === 3) {
 			return [
 				'type' => 'RES',
 				'role' => 'REQ'
 			];
 		} else {
-			if ($asType === 2) {
+			if (intval($asType) === 2) {
 				return [
 					'type' => 'IND',
 					'role' => 'OPT'
@@ -598,11 +599,12 @@ class BackendWTCalendar extends AbstractWTBackendDiff {
 		// DE = DECLINED
 		// TE = TENTATIVE
 		// AC = ACCEPTED
-		if ($asStatus === 2) {
+		// Z-Push decodes WBXML values as strings
+		if (intval($asStatus) === 2) {
 			return 'TE';
-		} else if ($asStatus === 3) {
+		} else if (intval($asStatus) === 3) {
 			return 'AC';
-		} else if ($asStatus === 4) {
+		} else if (intval($asStatus) === 4) {
 			return 'DE';
 		} else {
 			return 'NA';

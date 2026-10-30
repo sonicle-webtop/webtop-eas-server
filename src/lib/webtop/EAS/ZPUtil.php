@@ -569,14 +569,10 @@ class ZPUtil {
 					$dval = 0;
 					$days = explode(",", $rule[1]);
 					foreach ($days as $day) {
-						if ($recurrence->type == "2") {
-							if (strlen($day) > 2) {
-								$recurrence->weekofmonth = intval($day);
-								$day = substr($day, -2);
-							} else {
-								$recurrence->weekofmonth = 1;
-							}
-							$recurrence->type = "3";
+						if (strlen($day) > 2) {
+							// nth weekday (eg. 2TU, -1FR): ActiveSync week of month goes from 1 to 5, 5 being the last
+							$recurrence->weekofmonth = self::toWeekOfMonth(substr($day, 0, -2));
+							$day = substr($day, -2);
 						}
 						switch ($day) {
 							//   1 = Sunday
@@ -623,11 +619,36 @@ class ZPUtil {
 					$recurrence->monthofyear = $rule[1];
 					break;
 
+				// The same nth weekday written as BYDAY=FR;BYSETPOS=-1 (only one position is supported)
+				case "BYSETPOS":
+					$positions = explode(",", $rule[1]);
+					$recurrence->weekofmonth = self::toWeekOfMonth($positions[0]);
+					break;
+
 				default:
 					\ZLog::Write(LOGLEVEL_DEBUG, sprintf("ZPUtil->rruleToMessageRecurrence(): '%s' is not yet supported.", $rule[0]));
 			}
 		}
+		// Monthly and yearly on weekdays are types of their own (on the nth weekday)
+		if (isset($recurrence->dayofweek)) {
+			if ($recurrence->type == "2") {
+				$recurrence->type = "3";
+			} else if ($recurrence->type == "5") {
+				$recurrence->type = "6";
+			}
+			if ((($recurrence->type == "3") || ($recurrence->type == "6")) && !isset($recurrence->weekofmonth)) {
+				$recurrence->weekofmonth = 1;
+			}
+		}
 		return $recurrence;
+	}
+
+	/**
+	 * Converts an RRULE ordinal (1..5, or -1 for the last) into an ActiveSync week of month (1..5, 5 being the last).
+	 */
+	private static function toWeekOfMonth($ordinal) {
+		$week = intval($ordinal);
+		return (($week < 0) || ($week > 5)) ? 5 : $week;
 	}
 	
 	public static function messageRecurrenceToRRule($rec, $eventStart, $eventTimezoneName, $deviceFamily = null) {
@@ -646,6 +667,7 @@ class ZPUtil {
 					$freq = "MONTHLY";
 					break;
 				case "5":
+				case "6":
 					$freq = "YEARLY";
 					break;
 			}
@@ -683,59 +705,14 @@ class ZPUtil {
 			$rrule[] = "INTERVAL=" . $rec->interval;
 		}
 		if (isset($rec->dayofweek)) {
-			$week = '';
 			if (isset($rec->weekofmonth)) {
-				$week = $rec->weekofmonth;
+				// nth of the days, written as WebTop does (BYSETPOS=-1;BYDAY=MO): with more days (eg. 62, any
+				// weekday) it is the nth of them all, as in ActiveSync. Week 5 is the last one: -1 in RRULE
+				$rrule[] = "BYSETPOS=" . ((intval($rec->weekofmonth) === 5) ? '-1' : $rec->weekofmonth);
 			}
 			$days = array();
-			if (($rec->dayofweek & 1) == 1) {
-				if (empty($week)) {
-					$days[] = "SU";
-				} else {
-					$days[] = $week . "SU";
-				}
-			}
-			if (($rec->dayofweek & 2) == 2) {
-				if (empty($week)) {
-					$days[] = "MO";
-				} else {
-					$days[] = $week . "MO";
-				}
-			}
-			if (($rec->dayofweek & 4) == 4) {
-				if (empty($week)) {
-					$days[] = "TU";
-				} else {
-					$days[] = $week . "TU";
-				}
-			}
-			if (($rec->dayofweek & 8) == 8) {
-				if (empty($week)) {
-					$days[] = "WE";
-				} else {
-					$days[] = $week . "WE";
-				}
-			}
-			if (($rec->dayofweek & 16) == 16) {
-				if (empty($week)) {
-					$days[] = "TH";
-				} else {
-					$days[] = $week . "TH";
-				}
-			}
-			if (($rec->dayofweek & 32) == 32) {
-				if (empty($week)) {
-					$days[] = "FR";
-				} else {
-					$days[] = $week . "FR";
-				}
-			}
-			if (($rec->dayofweek & 64) == 64) {
-				if (empty($week)) {
-					$days[] = "SA";
-				} else {
-					$days[] = $week . "SA";
-				}
+			foreach (["SU" => 1, "MO" => 2, "TU" => 4, "WE" => 8, "TH" => 16, "FR" => 32, "SA" => 64] as $day => $bit) {
+				if (($rec->dayofweek & $bit) == $bit) $days[] = $day;
 			}
 			$rrule[] = "BYDAY=" . implode(",", $days);
 		}
