@@ -5,6 +5,8 @@ use WT\EAS\ZPUtil;
 
 abstract class AbstractWTBackendDiff extends BackendDiff {
 	const PERMREF_DEVICES_SYNC = 'com.sonicle.webtop.core/DEVICES_SYNC/ACCESS';
+	// Minimum seconds between two WebTop checks of the changes sink
+	const SINK_MIN_CHECK_INTERVAL = 5;
 	protected $deviceFamily;
 	//protected $currentDomain;
 	protected $currentUsername;
@@ -16,7 +18,8 @@ abstract class AbstractWTBackendDiff extends BackendDiff {
 	protected $useLegacyIds;
 	private $sinkFolders;
 	private $sinkStates;
-	
+	private $sinkLastCheck = 0;
+
 	public function __construct() {
 		$this->foldersCache = [];
 		$this->folderMessagesCache = [];
@@ -295,6 +298,14 @@ abstract class AbstractWTBackendDiff extends BackendDiff {
 		$logger = $this->getLogger();
 
 		$notifications = [];
+		// When less than a second is left before the end of the heartbeat, Z-Push
+		// calls the sink back-to-back (BackendCombined does not wait with a 1
+		// second timeout): do not ask WebTop again so soon
+		if ((time() - $this->sinkLastCheck) < self::SINK_MIN_CHECK_INTERVAL) {
+			if ($logger->isTraceEnabled()) $logger->trace('Last check {}s ago, skipping', [time() - $this->sinkLastCheck]);
+			return $notifications;
+		}
+		$this->sinkLastCheck = time();
 		try {
 			// Fresh states: the folders cache was filled when the request started
 			$folders = $this->doGetApiFolders(true);
